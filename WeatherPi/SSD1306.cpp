@@ -1,3 +1,6 @@
+// SSD1306 Driver under development
+// Not recomended for use as currently is
+
 #include "SSD1306.hpp"
 #include <iostream>
 #include <string.h>

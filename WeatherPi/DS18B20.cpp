@@ -14,15 +14,12 @@ int DS18B20::Initialize()
     {
         return 0;
     }
-    // Reads the directories or files in the current directory.
+    // TODO: List all connected DS18B20 Devices.
     while ((direntp = readdir(dirp)) != NULL)
-    {
-        // If 28-00000 is the substring of d_name,
-        // then copy d_name to rom and print rom.  
+    {  
         if (strstr(direntp->d_name, "28-"))
         {
             strcpy(serialNumber, direntp->d_name);
-            //printf(" rom: %s\n", rom);
         }
     }
     closedir(dirp);
