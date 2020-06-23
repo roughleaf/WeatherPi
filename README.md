@@ -8,9 +8,9 @@ It will consist of several satellite Raspberry pi zero W boards with the followi
 1. BME280 for relative humidity, air pressure and temperature.
 2. DS18B20 for temperature.
 3. MQ-135 gas sensor in combination with ADS1115 I2C ADC for air quality.
-4. The satellite board outside satellite will also feature a tipping bucket rain sensor.
+4. The satellite board outside will also feature a tipping bucket rain sensor.
 
-A raspberry pi 3 with a 3.5" display will ping the satellite sensor raspberry pi zero boards every 10 minutes for data and display the data for each.
+A raspberry pi 3 with a 3.5" display will poll the satellite sensor raspberry pi zero boards every 10 minutes for data and display the data for each on the display.
 I decided on UDP because dropped packets will not cause problems for this application.
 
 TODO:
