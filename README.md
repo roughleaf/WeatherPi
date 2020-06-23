@@ -1,6 +1,7 @@
 # WeatherPi
 
-I used PIGPIO for accessing the GPIOs of the RaspberryPi
+I used PIGPIO for accessing the GPIOs of the RaspberryPi.
+I used Adafruit fonts for the SSD1306 OLED.
 
 This is a project I started to monitor the weather.
 
