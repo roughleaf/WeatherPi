@@ -122,7 +122,7 @@ int main(void)
 			std::cout << oledHumidity << std::endl;
 			//std::string oTemperature = std::to_string(sensor.GetTemperature());
 			std::string oHumidity;
-			oled.ClearScreen();
+			oled.ClearBuffer();
 			oled.DisplayOn();
 			oled.PrintS(oledTemperature.c_str(), 0, 0);
 			oled.PrintS(oledHumidity.c_str(), 0, 32);

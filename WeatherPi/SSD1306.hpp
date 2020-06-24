@@ -48,13 +48,12 @@ public:
 	int DisplayOn(void);
 	int Display(void);
 	int ClearScreen(void);
+	int ClearBuffer(void);
 	int FillScreen(void);
 	int FlipDisplayVertically(void);
 	int FlipDisplayHorizontally(void);
 	int PrintC(const unsigned char character);
-	void FontTest(void);
 	int DrawPixel(int x, int y, int colour);
-	int CharArrayTest(void);
 	int PrintS(const char* buf, int x, int y);
 };
 

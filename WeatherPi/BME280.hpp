@@ -51,7 +51,6 @@ private:
 	signed short digH5 = 0;
 	signed char digH6 = 0;
 
-	void Error(const int error);
 	int GetStatus();
 	int GetCalibrateData();
 	int GetSensorData(void);

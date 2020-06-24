@@ -1,68 +1,4 @@
 #include "BME280.hpp"
-void BME280::Error(const int error)
-{
-	/*switch (error)
-	{
-	case  PI_BAD_I2C_BUS:
-	{
-		std::cout << "PI_BAD_I2C_BUS" << std::endl;
-		return;
-	}
-	break;
-
-	case  PI_BAD_I2C_ADDR:
-	{
-		std::cout << "PI_BAD_I2C_ADDR" << std::endl;
-		return;
-	}
-	break;
-
-	case  PI_BAD_FLAGS:
-	{
-		std::cout << "PI_BAD_FLAGS" << std::endl;
-		return;
-	}
-	break;
-
-	case  PI_NO_HANDLE:
-	{
-		std::cout << "PI_NO_HANDLE" << std::endl;
-		return;
-	}
-	break;
-
-	case  PI_I2C_OPEN_FAILED:
-	{
-		std::cout << "PI_I2C_OPEN_FAILED" << std::endl;
-		return;
-	}
-	break;
-	case PI_BAD_HANDLE:
-	{
-		std::cout << "PI_BAD_HANDLE" << std::endl;
-	}
-	break;
-
-	case PI_BAD_PARAM:
-	{
-		std::cout << "PI_BAD_PARAM" << std::endl;
-	}
-	break;
-
-	case PI_I2C_READ_FAILED:
-	{
-		std::cout << "PI_I2C_READ_FAILED" << std::endl;
-	}
-	break;
-
-	default:
-	{
-		std::cout << "Undifined Error" << std::endl;
-		return;
-	}
-	break;
-	}*/
-}
 
 int BME280::GetStatus()
 {
@@ -215,35 +151,11 @@ int BME280::Initialize(const unsigned char i2cAddr)
 			SetCtrlMeas(temperatureOversamplingX8, pressureOversampleX8, sensorNormalMode);
 			SetConfig(configStandby1000ms, configFilterOff);
 			GetCalibrateData();
-			/*std::cout << "======================================== Temp Cal Values =======================================" << std::endl;
-			std::cout << "digT1: " << digT1 << std::endl;
-			std::cout << "digT2: " << digT2 << std::endl;
-			std::cout << "digT3: " << digT3 << std::endl;
-			std::cout << "================================================================================================" << std::endl;
-			std::cout << "====================================== Pressure Cal Values =====================================" << std::endl;
-			std::cout << "digP1: " << digP1 << std::endl;
-			std::cout << "digP2: " << digP2 << std::endl;
-			std::cout << "digP3: " << digP3 << std::endl;
-			std::cout << "digP4: " << digP4 << std::endl;
-			std::cout << "digP5: " << digP5 << std::endl;
-			std::cout << "digP6: " << digP6 << std::endl;
-			std::cout << "digP7: " << digP7 << std::endl;
-			std::cout << "digP8: " << digP8 << std::endl;
-			std::cout << "digP9: " << digP9 << std::endl;
-			std::cout << "================================================================================================" << std::endl;
-			std::cout << "====================================== Humidity Cal Values =====================================" << std::endl;
-			std::cout << "digH1: " << (short)digH1 << std::endl;
-			std::cout << "digH2: " << (short)digH2 << std::endl;
-			std::cout << "digH3: " << (short)digH3 << std::endl;
-			std::cout << "digH4: " << (short)digH4 << std::endl;
-			std::cout << "digH5: " << (short)digH5 << std::endl;
-			std::cout << "digH6: " << (short)digH6 << std::endl;
-			std::cout << "================================================================================================" << std::endl;*/
+		
 			return 0;
 		}
 		else
 		{
-			Error(handle);
 			return -1;
 		}
 	}
@@ -269,7 +181,6 @@ int BME280::Initialize(const unsigned char i2cBus, const unsigned char i2cAddr)
 		}
 		else
 		{
-			Error(handle);
 			return -1;
 		}
 	}
@@ -295,7 +206,6 @@ int BME280::GetDeviceID()
 	}
 	else
 	{
-		Error(deviceID);
 		return -1;
 	}
 }
