@@ -26,76 +26,31 @@ SSD1306::~SSD1306()
 int SSD1306::Initialize(const unsigned char i2cAddr)
 {
 	handle = i2cOpen(1, i2cAddr, 0);
-	
-	WriteCommand(0xA8);
-	WriteCommand(0x3F);
 
-	WriteCommand(0xD3);
-	WriteCommand(0x00);
+	std::vector<unsigned char> commands = { 0xA8, 0x3F, 0xD3, 0x00, 0x40, 0xA1, 0xC8, 0xDA, 0x12, 0x81, 0x7F, 0xA4, 0xA6, 0xD5, 0x80, 0x8D, 0x14, 0xAF };
 
-	WriteCommand(0x40);
-	
-	WriteCommand(0xA1);
+	for (unsigned char commandValue : commands)
+	{
+		WriteCommand(commandValue); 
+	}
 
-	WriteCommand(0xC8);
-
-	WriteCommand(0xDA);
-	WriteCommand(0x12);
-
-	WriteCommand(0x81);
-	WriteCommand(0x7F);
-
-	WriteCommand(0xA4);
-
-	WriteCommand(0xA6);
-
-	WriteCommand(0xD5);
-	WriteCommand(0x80);
-
-	WriteCommand(0x8D);
-	WriteCommand(0x14);
-
-	WriteCommand(0xAF);	
-	
-	//std::vector<unsigned char> commands = { 0xA8, 0x3F, 0xD3, 0x00, 0x40, 0xA1, 0xC8, 0xDA, 0x12, 0x81, 0x7F, 0xA4, 0xA6, 0xD5, 0x80, 0x8D, 0x14, 0xAF };
-
-	//std::for_each (begin(commands), end(commands), WriteCommand);
+	ClearBuffer();
 
 	return 0;
 }
+
 int SSD1306::Initialize(const unsigned char i2cBus, const unsigned char i2cAddr)
 {
 	handle = i2cOpen(i2cBus, i2cAddr, 0);
 
-	WriteCommand(0xA8);
-	WriteCommand(0x3F);
+	std::vector<unsigned char> commands = { 0xA8, 0x3F, 0xD3, 0x00, 0x40, 0xA1, 0xC8, 0xDA, 0x12, 0x81, 0x7F, 0xA4, 0xA6, 0xD5, 0x80, 0x8D, 0x14, 0xAF };
 
-	WriteCommand(0xD3);
-	WriteCommand(0x00);
+	for (unsigned char commandValue : commands)
+	{
+		WriteCommand(commandValue);
+	}
 
-	WriteCommand(0x40);
-
-	WriteCommand(0xA1); 
-
-	WriteCommand(0xC0);
-
-	WriteCommand(0xDA);
-	WriteCommand(0x12);
-
-	WriteCommand(0x81);
-	WriteCommand(0x7F);
-
-	WriteCommand(0xA4);
-
-	WriteCommand(0xA6);
-
-	WriteCommand(0xD5);
-	WriteCommand(0x80);
-
-	WriteCommand(0x8D);
-	WriteCommand(0x14);
-
-	WriteCommand(0xAF);
+	ClearBuffer();
 
 	return 0;
 }

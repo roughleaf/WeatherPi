@@ -84,8 +84,6 @@ int main(void)
 			MSG_WAITALL, (struct sockaddr*)&cliaddr,
 			(socklen_t*)&len);
 
-
-		//std::cout << "Received UDP Datagram from " << cliaddr.sin_addr.s_addr << std::endl;
 		std::cout << "Received UDP Datagram from " << inet_ntoa(cliaddr.sin_addr) << std::endl;
 
 		buffer[n] = '\0';
@@ -120,10 +118,8 @@ int main(void)
 			stream << std::fixed << std::setprecision(1) << sensor.GetHumidity() << "%";
 			std::string oledHumidity = stream.str();
 			std::cout << oledHumidity << std::endl;
-			//std::string oTemperature = std::to_string(sensor.GetTemperature());
 			std::string oHumidity;
 			oled.ClearBuffer();
-			oled.DisplayOn();
 			oled.PrintS(oledTemperature.c_str(), 0, 0);
 			oled.PrintS(oledHumidity.c_str(), 0, 32);
 			oled.Display();
@@ -141,9 +137,7 @@ int main(void)
 
 		case '4':	// Section to test some stuff
 		{
-			tempSensor.Mount();
-			tempSensor.Initialize();
-			std::cout << tempSensor.GetTemperature() << std::endl;
+			oled.DisplayOn();
 		}
 		break;
 		}
