@@ -1,4 +1,5 @@
 #include "BME280.hpp"
+#include <unistd.h>
 
 int BME280::GetStatus()
 {
@@ -141,17 +142,21 @@ double BME280::CompensateHumidity(const unsigned long humADC)
 
 int BME280::Initialize(const unsigned char i2cAddr)
 {
+	return Initialize(1, i2cAddr);
+}
+
+int BME280::Initialize(const unsigned char i2cBus, const unsigned char i2cAddr)
+{
 	if (handle < 0)		//If already open, ignore and return -1.
 	{
-		handle = i2cOpen(1, i2cAddr, 0);
+		handle = i2cOpen(i2cBus, i2cAddr, 0);
 		if (handle >= 0)
 		{
 			Reset();
-			SetCtrlHum(humidityOversamplingX4);
-			SetCtrlMeas(temperatureOversamplingX8, pressureOversampleX8, sensorNormalMode);
+			SetCtrlHum(humidityOversamplingValue);
+			SetCtrlMeas(temperatureOversamplingValue, pressureOversamplingValue, sensorModeValue);
 			SetConfig(configStandby1000ms, configFilterOff);
 			GetCalibrateData();
-		
 			return 0;
 		}
 		else
@@ -165,29 +170,33 @@ int BME280::Initialize(const unsigned char i2cAddr)
 	}
 }
 
-int BME280::Initialize(const unsigned char i2cBus, const unsigned char i2cAddr)
+int BME280::Initialize(const unsigned char i2cAddr, 
+	const unsigned char humidityOversampling, 
+	const unsigned char temperatureOversampling, 
+	const unsigned char pressureOversampling, 
+	const unsigned char sensorMode)
 {
-	if (handle < 0)		//If already open, ignore and return -1.
-	{
-		handle = i2cOpen(i2cBus, i2cAddr, 0);
-		if (handle >= 0)
-		{
-			Reset();
-			SetCtrlHum(humidityOversamplingX4);
-			SetCtrlMeas(temperatureOversamplingX8, pressureOversampleX8, sensorNormalMode);
-			SetConfig(configStandby1000ms, configFilterOff);
-			GetCalibrateData();
-			return 0;
-		}
-		else
-		{
-			return -1;
-		}
-	}
-	else
-	{
-		return -1;
-	}
+	humidityOversamplingValue = humidityOversampling;
+	pressureOversamplingValue = pressureOversampling;
+	temperatureOversamplingValue = temperatureOversampling;
+	sensorModeValue = sensorMode;
+
+	return Initialize(1, i2cAddr);
+}
+
+int BME280::Initialize(const unsigned char i2cBus, 
+	const unsigned char i2cAddr,
+	const unsigned char humidityOversampling,
+	const unsigned char temperatureOversampling,
+	const unsigned char pressureOversampling,
+	const unsigned char sensorMode)
+{
+	humidityOversamplingValue = humidityOversampling;
+	pressureOversamplingValue = pressureOversampling;
+	temperatureOversamplingValue = temperatureOversampling;
+	sensorModeValue = sensorMode;
+
+	return Initialize(i2cBus, i2cAddr);
 }
 
 int BME280::Close(void)
@@ -289,6 +298,15 @@ int BME280::GetAllResults(void)
 int BME280::GetSensorData()
 {
 	char* buff = new char[9];
+
+	if (sensorModeValue == sensorForcedMode)
+	{
+		SetCtrlMeas(temperatureOversamplingValue, pressureOversamplingValue, sensorModeValue);
+		while (StatusMeasuringBusy())
+		{
+			usleep(50000);
+		}
+	}
 
 	i2cReadI2CBlockData(handle, 0xF7, buff, 8);
 

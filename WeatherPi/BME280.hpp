@@ -63,11 +63,11 @@ public:
 	SensorData result;
 
 	const unsigned char pressureSensorDisable = 0x00;
-	const unsigned char pressureOversampleX1 = 0x01;
-	const unsigned char pressureOversampleX2 = 0x02;
-	const unsigned char pressureOversampleX4 = 0x03;
-	const unsigned char pressureOversampleX8 = 0x04;
-	const unsigned char pressureOversampleX16 = 0x05;
+	const unsigned char pressureOversamplingX1 = 0x01;
+	const unsigned char pressureOversamplingX2 = 0x02;
+	const unsigned char pressureOversamplingX4 = 0x03;
+	const unsigned char pressureOversamplingX8 = 0x04;
+	const unsigned char pressureOversamplingX16 = 0x05;
 	const unsigned char temperatureSensorDisable = 0x00;
 	const unsigned char temperatureOversamplingX1 = 0x01;
 	const unsigned char temperatureOversamplingX2 = 0x02;
@@ -99,8 +99,25 @@ public:
 	const unsigned char humidityOversamplingX8 = 0x04;
 	const unsigned char humidityOversamplingX16 = 0x05;
 
+	unsigned char humidityOversamplingValue = 0x01;		// Default to 1X over sampling
+	unsigned char pressureOversamplingValue = 0x01;		// Default to 1X over sampling
+	unsigned char temperatureOversamplingValue = 0x01;	// Default to 1X over sampling
+	unsigned char sensorModeValue = 0x01;				// Default to forced mode
+
+
 	int Initialize(const unsigned char i2cAddr);
 	int Initialize(const unsigned char i2cBus, const unsigned char i2cAddr);
+	int Initialize(const unsigned char i2cAddr, 
+		const unsigned char humidityOversampling, 
+		const unsigned char temperatureOversampling, 
+		const unsigned char pressureOversampling, 
+		const unsigned char SensorMode);
+	int Initialize(const unsigned char i2cBus,
+		const unsigned char i2cAddr,
+		const unsigned char humidityOversampling,
+		const unsigned char temperatureOversampling,
+		const unsigned char pressureOversampling,
+		const unsigned char sensorMode);
 	int Close(void);
 	int GetDeviceID(void);
 	int SetConfig(const unsigned char config);
