@@ -176,12 +176,7 @@ int BME280::Initialize(const unsigned char i2cAddr,
 	const unsigned char pressureOversampling, 
 	const unsigned char sensorMode)
 {
-	humidityOversamplingValue = humidityOversampling;
-	pressureOversamplingValue = pressureOversampling;
-	temperatureOversamplingValue = temperatureOversampling;
-	sensorModeValue = sensorMode;
-
-	return Initialize(1, i2cAddr);
+	return Initialize(1, i2cAddr, humidityOversampling, temperatureOversampling, pressureOversampling, sensorMode);
 }
 
 int BME280::Initialize(const unsigned char i2cBus, 
@@ -192,8 +187,8 @@ int BME280::Initialize(const unsigned char i2cBus,
 	const unsigned char sensorMode)
 {
 	humidityOversamplingValue = humidityOversampling;
-	pressureOversamplingValue = pressureOversampling;
 	temperatureOversamplingValue = temperatureOversampling;
+	pressureOversamplingValue = pressureOversampling;
 	sensorModeValue = sensorMode;
 
 	return Initialize(i2cBus, i2cAddr);

@@ -39,7 +39,7 @@ int main(void)
 
 	gpioInitialise();			// Initialize PIGPIO Library
 
-	sensor.Initialize(1, 0x76,		// Initialize BME280
+	sensor.Initialize(0x76,		// Initialize BME280
 		sensor.humidityOversamplingX1, 
 		sensor.temperatureOversamplingX1, 
 		sensor.pressureOversamplingX1, 

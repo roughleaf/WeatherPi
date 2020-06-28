@@ -28,6 +28,11 @@ private:
 	bool humidityMeasureEnabled = true;
 	bool pressureMeasureEnabled = true;
 
+	unsigned char humidityOversamplingValue = 0x01;		// Default to 1X over sampling
+	unsigned char pressureOversamplingValue = 0x01;		// Default to 1X over sampling
+	unsigned char temperatureOversamplingValue = 0x01;	// Default to 1X over sampling
+	unsigned char sensorModeValue = 0x01;				// Default to forced mode
+
 	unsigned short digT1 = 0;
 	signed short digT2 = 0;
 	signed short digT3 = 0;
@@ -98,12 +103,6 @@ public:
 	const unsigned char humidityOversamplingX4 = 0x03;
 	const unsigned char humidityOversamplingX8 = 0x04;
 	const unsigned char humidityOversamplingX16 = 0x05;
-
-	unsigned char humidityOversamplingValue = 0x01;		// Default to 1X over sampling
-	unsigned char pressureOversamplingValue = 0x01;		// Default to 1X over sampling
-	unsigned char temperatureOversamplingValue = 0x01;	// Default to 1X over sampling
-	unsigned char sensorModeValue = 0x01;				// Default to forced mode
-
 
 	int Initialize(const unsigned char i2cAddr);
 	int Initialize(const unsigned char i2cBus, const unsigned char i2cAddr);
