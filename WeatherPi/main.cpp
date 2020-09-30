@@ -18,6 +18,22 @@
 #define PORT     8080 
 #define MAXLINE 1024 
 
+//gpioISRFunc_t PushedButton;
+
+void PushedButton(int gpio, int level, uint32_t tick)
+{
+	std::cout << "Interrupt Triggered" << std::endl;
+	if (gpioRead(27))
+	{
+		gpioWrite(27, 0);
+	}
+	else
+	{
+		gpioWrite(27, 1);
+	}
+	return;
+}
+
 int main(void)
 {
 	system("clear");
@@ -38,6 +54,14 @@ int main(void)
 	std::cout << std::setprecision(3);
 
 	gpioInitialise();			// Initialize PIGPIO Library
+
+	gpioSetMode(27, PI_OUTPUT);
+	gpioSetMode(17, PI_INPUT);
+	gpioSetPullUpDown(17, PI_PUD_UP);
+
+	gpioISRFunc_t Pushed;				// Setup Interrupt Callback
+	Pushed = PushedButton;
+	gpioSetISRFunc(17, 0, 0, Pushed);
 
 	sensor.Initialize(0x76,		// Initialize BME280
 		sensor.humidityOversamplingX1, 
@@ -154,3 +178,5 @@ int main(void)
 	gpioTerminate();
 	return 0;
 }
+
+
