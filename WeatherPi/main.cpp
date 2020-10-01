@@ -1,6 +1,7 @@
 #include "BME280.hpp"
 #include "SSD1306.hpp"
 #include "DS18B20.hpp"
+#include "AS3935.hpp"
 #include <pigpio.h>
 #include <iostream>
 #include <iomanip>
@@ -20,17 +21,12 @@
 
 //gpioISRFunc_t PushedButton;
 
-void PushedButton(int gpio, int level, uint32_t tick)
+void As3935Interrupt(int gpio, int level, uint32_t tick)
 {
-	std::cout << "Interrupt Triggered" << std::endl;
-	if (gpioRead(27))
-	{
-		gpioWrite(27, 0);
-	}
-	else
-	{
-		gpioWrite(27, 1);
-	}
+	std::cout << "AS3935 Interrupt Triggered" << std::endl;
+	
+	gpioWrite(27, !gpioRead(27));
+
 	return;
 }
 
@@ -41,6 +37,7 @@ int main(void)
 	BME280 sensor;
 	SSD1306 oled;
 	DS18B20 tempSensor;
+	AS3935 lightningDetector;
 
 	std::string Temperature = "";
 	std::string Humidity = "";
@@ -59,9 +56,8 @@ int main(void)
 	gpioSetMode(17, PI_INPUT);
 	gpioSetPullUpDown(17, PI_PUD_UP);
 
-	gpioISRFunc_t Pushed;				// Setup Interrupt Callback
-	Pushed = PushedButton;
-	gpioSetISRFunc(17, 0, 0, Pushed);
+	gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
+	gpioSetISRFunc(17, 0, 0, As3935CallBack);
 
 	sensor.Initialize(0x76,		// Initialize BME280
 		sensor.humidityOversamplingX1, 
@@ -72,6 +68,21 @@ int main(void)
 	oled.DisplayOff();
 	tempSensor.Mount();
 	tempSensor.Initialize();
+
+	if (lightningDetector.Initialize(0) >= 0)
+	{
+		std::cout << "AS3935 opened" << std::endl;
+	}
+	else
+	{
+		std::cout << "could not open AS3935" << std::endl;
+	}
+
+	lightningDetector.SetRegister(1, 33);
+
+	std::cout << "Lightning detector register 0 data: " << (int)lightningDetector.ReadRegister(0) << std::endl;
+	std::cout << "Lightning detector register 1 data: " << (int)lightningDetector.ReadRegister(1) << std::endl;
+	std::cout << "Lightning detector register 2 data: " << (int)lightningDetector.ReadRegister(2) << std::endl;
 	// ==================== UDP Server Code ==========================
 	
 	int sockfd;
