@@ -2,6 +2,7 @@
 #include "SSD1306.hpp"
 #include "DS18B20.hpp"
 #include "AS3935.hpp"
+#include "I2CLCD.hpp"
 #include <pigpio.h>
 #include <iostream>
 #include <iomanip>
@@ -21,14 +22,10 @@
 
 //gpioISRFunc_t PushedButton;
 
-void As3935Interrupt(int gpio, int level, uint32_t tick)
-{
-	std::cout << "AS3935 Interrupt Triggered" << std::endl;
-	
-	gpioWrite(27, !gpioRead(27));
+AS3935 lightningDetector;
+I2CLCD lcd;
 
-	return;
-}
+void As3935Interrupt(int gpio, int level, uint32_t tick);
 
 int main(void)
 {
@@ -37,7 +34,7 @@ int main(void)
 	BME280 sensor;
 	SSD1306 oled;
 	DS18B20 tempSensor;
-	AS3935 lightningDetector;
+	
 
 	std::string Temperature = "";
 	std::string Humidity = "";
@@ -52,12 +49,17 @@ int main(void)
 
 	gpioInitialise();			// Initialize PIGPIO Library
 
+	lcd.Initialize(0x27);
+	lcd.WriteString("Tsup World!");	// Write "H" to LCD
+	//lcd.WriteCharacter('H');
+	lcd.WriteCommand(0x08);
+
 	gpioSetMode(27, PI_OUTPUT);
 	gpioSetMode(17, PI_INPUT);
-	gpioSetPullUpDown(17, PI_PUD_UP);
+	gpioSetPullUpDown(17, PI_PUD_OFF);
 
 	gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
-	gpioSetISRFunc(17, 0, 0, As3935CallBack);
+	gpioSetISRFunc(17, 1, 0, As3935CallBack);
 
 	sensor.Initialize(0x76,		// Initialize BME280
 		sensor.humidityOversamplingX1, 
@@ -78,11 +80,12 @@ int main(void)
 		std::cout << "could not open AS3935" << std::endl;
 	}
 
-	lightningDetector.SetRegister(1, 33);
+	lightningDetector.SetRegister(0x03, 0x00);
 
 	std::cout << "Lightning detector register 0 data: " << (int)lightningDetector.ReadRegister(0) << std::endl;
 	std::cout << "Lightning detector register 1 data: " << (int)lightningDetector.ReadRegister(1) << std::endl;
 	std::cout << "Lightning detector register 2 data: " << (int)lightningDetector.ReadRegister(2) << std::endl;
+	std::cout << "Lightning detector interrupt register data: " << (int)lightningDetector.ReadRegister(0x03) << std::endl;
 	// ==================== UDP Server Code ==========================
 	
 	int sockfd;
@@ -140,6 +143,12 @@ int main(void)
 				+ std::to_string(sensor.GetPressure()) + ',' 
 				+ std::to_string(tempSensor.GetTemperature());
 
+			// TODO
+			// + std::to_string(lightningDetector.Distance);
+			// lightningDetector.LightningDetected = false;
+			// lightningDetector.Distance = 0;
+			// Not implienting it yet because the client programs are not yet updated to accept the new string
+
 			sendto(sockfd, (const char*)UDPreturn.c_str(), UDPreturn.length(),
 				MSG_CONFIRM, (const struct sockaddr*)&cliaddr,
 				len);
@@ -190,4 +199,36 @@ int main(void)
 	return 0;
 }
 
+void As3935Interrupt(int gpio, int level, uint32_t tick)
+{
+	std::cout << "AS3935 Interrupt Triggered" << std::endl;
+	usleep(5000);						// Wait 5 ms for AS3935 to finish operations
+	gpioWrite(27, !gpioRead(27));		// 
 
+	int Lint = (int)lightningDetector.ReadRegister(0x03) & 0x0F;
+
+	switch (Lint)
+	{
+	case 8:
+		lightningDetector.LightningDetected = true;
+		lightningDetector.Distance = (int)lightningDetector.ReadRegister(0x07);
+		std::cout << "Lightning Distance estimation: " << lightningDetector.Distance << "km" << std::endl;
+
+		break;
+	case 4:
+		std::cout << "Disturber detected" << std::endl;
+		break;
+	case 1:
+		std::cout << "Noise level to high" << std::endl;
+		break;
+	case 0:
+		std::cout << "Old data purged" << std::endl;
+		break;
+	default:
+		break;
+	}
+
+	usleep(5000);
+
+	return;
+}

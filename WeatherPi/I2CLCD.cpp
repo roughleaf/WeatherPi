@@ -1,0 +1,90 @@
+#include "I2CLCD.hpp"
+#include <unistd.h>
+#include <iostream>
+#include <bitset>
+#include <string.h>
+
+int I2CLCD::WriteNibble(unsigned char nibble, unsigned char rs)
+{
+	nibble |= rs;
+	nibble |= 0x08;		// Turn on backlight
+
+	i2cWriteByte(handle, nibble | 0x04);
+	i2cWriteByte(handle, nibble & 0xFB);
+	usleep(50);
+
+	return 0;
+}
+
+int I2CLCD::Initialize(const unsigned char i2cAddr)
+{
+	return Initialize(1, i2cAddr);
+}
+
+int I2CLCD::Initialize(const unsigned char i2cBus, const unsigned char i2cAddr)
+{
+	handle = i2cOpen(i2cBus, i2cAddr, 0);
+	
+	if (handle >= 0)
+	{
+
+		i2cWriteByte(handle, 0x00);
+		usleep(30000);
+		WriteCommand(0x03);
+		usleep(5000);
+		WriteCommand(0x03);
+		usleep(5000);
+		WriteCommand(0x03);
+		usleep(5000);
+		WriteCommand(0x02);
+		usleep(5000);
+		WriteCommand(0x20 | (2 << 2));
+		usleep(50000);
+		WriteCommand(0x0C);
+		usleep(50000);
+		WriteCommand(0x01);
+		usleep(50000);
+		WriteCommand(0x04 | 0x02);
+		usleep(50000);
+		
+		std::cout << "LCD should be innitialized" << std::endl;
+
+	}
+	
+	else
+	{
+		std::cout << "could not innitialize LCD" << std::endl;
+	}
+
+	return handle;
+
+}
+
+int I2CLCD::WriteCommand(const unsigned char command)
+{
+	unsigned char rs = 0;
+
+	WriteNibble(command & 0xF0, rs);
+	WriteNibble((command << 4) & 0xF0, rs);
+		
+	return 0;
+}
+
+int I2CLCD::WriteCharacter(const unsigned char data)
+{
+	unsigned char rs = 1;
+
+	WriteNibble(data & 0xF0, rs);
+	WriteNibble((data << 4) & 0xF0, rs);
+
+	return 0;
+}
+
+int I2CLCD::WriteString(const char* buf)
+{
+	for (int i = 0; i < (strlen(buf)); i++)
+	{
+		WriteCharacter(buf[i]);
+	}
+	return 0;
+}

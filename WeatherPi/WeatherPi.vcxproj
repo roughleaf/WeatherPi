@@ -74,6 +74,7 @@
     <ClCompile Include="AS3935.cpp" />
     <ClCompile Include="BME280.cpp" />
     <ClCompile Include="DS18B20.cpp" />
+    <ClCompile Include="I2CLCD.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SSD1306.cpp" />
   </ItemGroup>
@@ -83,6 +84,7 @@
     <ClInclude Include="BME280.hpp" />
     <ClInclude Include="DS18B20.hpp" />
     <ClInclude Include="GFXFonts.hpp" />
+    <ClInclude Include="I2CLCD.hpp" />
     <ClInclude Include="Mono18pt7b.hpp" />
     <ClInclude Include="SSD1306.hpp" />
   </ItemGroup>
