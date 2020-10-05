@@ -185,6 +185,12 @@ int main(void)
 		{
 			lightningDetector.DisturberCount = 0;
 			lightningDetector.LightningStrikeCount = 0;
+			lcd.Clear();
+			lcd.Home();
+			lcd.WriteCommand(LCD_FIRST_ROW);
+			lcd.WriteString("Lightning: 0");
+			lcd.WriteCommand(LCD_SECOND_ROW);
+			lcd.WriteString("Disturber: 0");
 		}
 		break;
 
@@ -244,6 +250,9 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 		lcd.WriteCommand(LCD_FIRST_ROW);
 		lcd.WriteString("Lightning: ");
 		lcd.WriteString(count.c_str());
+		lcd.WriteCommand(LCD_SECOND_ROW);
+		lcd.WriteString("Disturber: ");
+		lcd.WriteString((std::to_string(lightningDetector.DisturberCount)).c_str());
 	}
 		break;
 	case 4:
@@ -254,6 +263,9 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 		count = std::to_string(++lightningDetector.DisturberCount);
 
 		lcd.Home();
+		lcd.WriteCommand(LCD_FIRST_ROW);
+		lcd.WriteString("Lightning: ");
+		lcd.WriteString((std::to_string(lightningDetector.LightningStrikeCount)).c_str());
 		lcd.WriteCommand(LCD_SECOND_ROW);
 		lcd.WriteString("Disturber: ");
 		lcd.WriteString(count.c_str());

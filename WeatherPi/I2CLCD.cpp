@@ -76,15 +76,20 @@ int I2CLCD::BacklightOff()
 
 int I2CLCD::BacklightToggle()
 {
-	if (BacklightOnOff == 0)
+	if (BacklightOnOff == 0x00)
 	{
 		BacklightOnOff = 0x08;
+		i2cWriteByte(handle, 0x08);
 	}
 	else
 	{
 		BacklightOnOff = 0x00;
+		i2cWriteByte(handle, 0x00);
 	}
 	return 0;
+
+	Home();
+
 }
 
 int I2CLCD::WriteCommand(const unsigned char command)
