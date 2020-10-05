@@ -50,16 +50,11 @@ int main(void)
 	gpioInitialise();			// Initialize PIGPIO Library
 
 	lcd.Initialize(0x27);
-	lcd.WriteString("Tsup World!");	// Write "H" to LCD
-	//lcd.WriteCharacter('H');
-	lcd.WriteCommand(0x08);
+	lcd.On();
 
 	gpioSetMode(27, PI_OUTPUT);
 	gpioSetMode(17, PI_INPUT);
 	gpioSetPullUpDown(17, PI_PUD_OFF);
-
-	gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
-	gpioSetISRFunc(17, 1, 0, As3935CallBack);
 
 	sensor.Initialize(0x76,		// Initialize BME280
 		sensor.humidityOversamplingX1, 
@@ -79,13 +74,10 @@ int main(void)
 	{
 		std::cout << "could not open AS3935" << std::endl;
 	}
+	
+	gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
+	gpioSetISRFunc(17, RISING_EDGE, 0, As3935CallBack);
 
-	lightningDetector.SetRegister(0x03, 0x00);
-
-	std::cout << "Lightning detector register 0 data: " << (int)lightningDetector.ReadRegister(0) << std::endl;
-	std::cout << "Lightning detector register 1 data: " << (int)lightningDetector.ReadRegister(1) << std::endl;
-	std::cout << "Lightning detector register 2 data: " << (int)lightningDetector.ReadRegister(2) << std::endl;
-	std::cout << "Lightning detector interrupt register data: " << (int)lightningDetector.ReadRegister(0x03) << std::endl;
 	// ==================== UDP Server Code ==========================
 	
 	int sockfd;
@@ -188,6 +180,29 @@ int main(void)
 			oled.DisplayOn();
 		}
 		break;
+
+		case '5':	// Section to test some stuff
+		{
+			lightningDetector.DisturberCount = 0;
+			lightningDetector.LightningStrikeCount = 0;
+		}
+		break;
+
+		case '6':	// Section to test some stuff
+		{
+			lcd.On();
+		}
+		case '7':	// Section to test some stuff
+		{
+			lcd.Off();
+		}
+		break;
+
+		case '8':	// Section to test some stuff
+		{
+			lcd.BacklightToggle();
+		}
+		break;
 		}
 	}
 	oled.DisplayOff();
@@ -201,25 +216,53 @@ int main(void)
 
 void As3935Interrupt(int gpio, int level, uint32_t tick)
 {
+	std::string count = "";
+
+	std::cout << std::endl;
+	std::cout << "==============================================" << std::endl;
 	std::cout << "AS3935 Interrupt Triggered" << std::endl;
+	std::cout << "==============================================" << std::endl;
 	usleep(5000);						// Wait 5 ms for AS3935 to finish operations
 	gpioWrite(27, !gpioRead(27));		// 
 
 	int Lint = (int)lightningDetector.ReadRegister(0x03) & 0x0F;
 
+	std::cout << "Register 3: " << Lint <<std::endl;
+	usleep(2000);
+	std::cout << "==============================================" << std::endl;
+
+	//lightningDetector.SetRegister(0x07, 0);
 	switch (Lint)
 	{
 	case 8:
-		lightningDetector.LightningDetected = true;
-		lightningDetector.Distance = (int)lightningDetector.ReadRegister(0x07);
-		std::cout << "Lightning Distance estimation: " << lightningDetector.Distance << "km" << std::endl;
+	{
+		std::cout << "Lightning Distance estimation: " << (int)lightningDetector.ReadRegister(0x07) << "km" << std::endl;
 
+		count = std::to_string(++lightningDetector.LightningStrikeCount);
+
+		lcd.Home();
+		lcd.WriteCommand(LCD_FIRST_ROW);
+		lcd.WriteString("Lightning: ");
+		lcd.WriteString(count.c_str());
+	}
 		break;
 	case 4:
+	{
 		std::cout << "Disturber detected" << std::endl;
+		std::cout << "Distance Register: " << (int)lightningDetector.ReadRegister(0x07) << std::endl;
+
+		count = std::to_string(++lightningDetector.DisturberCount);
+
+		lcd.Home();
+		lcd.WriteCommand(LCD_SECOND_ROW);
+		lcd.WriteString("Disturber: ");
+		lcd.WriteString(count.c_str());
+	}
 		break;
 	case 1:
+	{
 		std::cout << "Noise level to high" << std::endl;
+	}
 		break;
 	case 0:
 		std::cout << "Old data purged" << std::endl;

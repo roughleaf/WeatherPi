@@ -7,8 +7,8 @@ private:
 	int handle = -1;
 
 public:
-	bool LightningDetected = false;
-	int Distance = 0;
+	int LightningStrikeCount = 0;
+	int DisturberCount = 0;
 
 	int Initialize(int channel);
 	unsigned char ReadRegister(unsigned char reg);
