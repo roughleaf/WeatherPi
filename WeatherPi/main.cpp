@@ -52,6 +52,12 @@ int main(void)
 	lcd.Initialize(0x27);
 	lcd.On();
 
+	lcd.Home();
+	lcd.WriteCommand(LCD_FIRST_ROW);
+	lcd.WriteString("Lightning: ");
+	lcd.WriteCommand(LCD_SECOND_ROW);
+	lcd.WriteString("Strikes: 0");
+
 	gpioSetMode(27, PI_OUTPUT);
 	gpioSetMode(17, PI_INPUT);
 	gpioSetPullUpDown(17, PI_PUD_OFF);
@@ -223,6 +229,7 @@ int main(void)
 void As3935Interrupt(int gpio, int level, uint32_t tick)
 {
 	std::string count = "";
+	std::string dist = "";
 
 	std::cout << std::endl;
 	std::cout << "==============================================" << std::endl;
@@ -242,33 +249,39 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 	{
 	case 8:
 	{
-		std::cout << "Lightning Distance estimation: " << (int)lightningDetector.ReadRegister(0x07) << "km" << std::endl;
-
 		count = std::to_string(++lightningDetector.LightningStrikeCount);
+		dist = std::to_string((int)lightningDetector.ReadRegister(0x07));
+
+		std::cout << "Lightning detected" << std::endl;
+		std::cout << "Lightning Distance estimation: " << dist << "km" << std::endl;
 
 		lcd.Home();
 		lcd.WriteCommand(LCD_FIRST_ROW);
 		lcd.WriteString("Lightning: ");
-		lcd.WriteString(count.c_str());
+		lcd.WriteString(dist.c_str());
+		lcd.WriteString("km");
 		lcd.WriteCommand(LCD_SECOND_ROW);
-		lcd.WriteString("Disturber: ");
-		lcd.WriteString((std::to_string(lightningDetector.DisturberCount)).c_str());
+		lcd.WriteString("Strikes: ");
+		lcd.WriteString(count.c_str());
+		//lcd.WriteString((std::to_string(lightningDetector.DisturberCount)).c_str());
 	}
 		break;
 	case 4:
 	{
-		std::cout << "Disturber detected" << std::endl;
-		std::cout << "Distance Register: " << (int)lightningDetector.ReadRegister(0x07) << std::endl;
-
 		count = std::to_string(++lightningDetector.DisturberCount);
+		dist = std::to_string((int)lightningDetector.ReadRegister(0x07));
 
-		lcd.Home();
+		std::cout << "Disturber detected" << std::endl;
+		std::cout << "Distance Register: " << dist << std::endl;
+
+		/*lcd.Home();
 		lcd.WriteCommand(LCD_FIRST_ROW);
 		lcd.WriteString("Lightning: ");
-		lcd.WriteString((std::to_string(lightningDetector.LightningStrikeCount)).c_str());
+		lcd.WriteString(dist.c_str());
+		lcd.WriteString("km");
 		lcd.WriteCommand(LCD_SECOND_ROW);
-		lcd.WriteString("Disturber: ");
-		lcd.WriteString(count.c_str());
+		lcd.WriteString("Strikes: ");
+		lcd.WriteString(count.c_str());*/
 	}
 		break;
 	case 1:
