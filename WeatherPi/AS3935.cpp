@@ -17,7 +17,7 @@ int AS3935::Initialize(int channel)
 		usleep(2000);
 		SetRegister(0x02, 0xC2);	// Default
 		usleep(2000);
-		SetRegister(0x03, 0x00);	// Default
+		SetRegister(0x03, 0x00);	// Default		usleep(2000);
 		usleep(2000);
 
 		return handle;

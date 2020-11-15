@@ -26,6 +26,7 @@ AS3935 lightningDetector;
 I2CLCD lcd;
 
 void As3935Interrupt(int gpio, int level, uint32_t tick);
+void ButtonPushed(int gpio, int level, uint32_t tick);
 
 int main(void)
 {
@@ -58,8 +59,11 @@ int main(void)
 	lcd.WriteCommand(LCD_SECOND_ROW);
 	lcd.WriteString("Strikes: 0");
 
-	gpioSetMode(27, PI_OUTPUT);
+	gpioSetMode(27, PI_INPUT);
+	gpioSetMode(26, PI_INPUT);
 	gpioSetMode(17, PI_INPUT);
+	gpioSetMode(6, PI_INPUT);
+	gpioSetMode(19, PI_OUTPUT);
 	gpioSetPullUpDown(17, PI_PUD_OFF);
 
 	sensor.Initialize(0x76,		// Initialize BME280
@@ -83,6 +87,9 @@ int main(void)
 	
 	gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
 	gpioSetISRFunc(17, RISING_EDGE, 0, As3935CallBack);
+
+	gpioISRFunc_t PbCallBack = ButtonPushed;				// Setup Interrupt Callback
+	gpioSetISRFunc(6, RISING_EDGE, 0, ButtonPushed);
 
 	// ==================== UDP Server Code ==========================
 	
@@ -255,6 +262,7 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 		std::cout << "Lightning detected" << std::endl;
 		std::cout << "Lightning Distance estimation: " << dist << "km" << std::endl;
 
+		lcd.Clear();
 		lcd.Home();
 		lcd.WriteCommand(LCD_FIRST_ROW);
 		lcd.WriteString("Lightning: ");
@@ -299,4 +307,9 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 	usleep(5000);
 
 	return;
+}
+
+void ButtonPushed(int gpio, int level, uint32_t tick)
+{
+	gpioWrite(19, !gpioRead(19));
 }

@@ -106,6 +106,7 @@ double BME280::CompensatePressure(const unsigned long pressADC)
 	}
 
 	return pressure;
+
 }
 
 double BME280::CompensateHumidity(const unsigned long humADC)
