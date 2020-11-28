@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include "Mono18pt7b.hpp"
+#include "NRF24L10.hpp"
 #include <string.h>
 #include <math.h>
 #include <unistd.h> 
@@ -16,6 +17,7 @@
 #include <netinet/in.h>
 #include <cstring>
 #include <sstream>
+#include <iomanip>
 
 #define PORT     8080 
 #define MAXLINE 1024 
@@ -26,7 +28,7 @@ AS3935 lightningDetector;
 I2CLCD lcd;
 
 void As3935Interrupt(int gpio, int level, uint32_t tick);
-void ButtonPushed(int gpio, int level, uint32_t tick);
+void NrfInterrupt(int gpio, int level, uint32_t tick);
 
 int main(void)
 {
@@ -35,13 +37,15 @@ int main(void)
 	BME280 sensor;
 	SSD1306 oled;
 	DS18B20 tempSensor;
-	
+	NRF24L10 nrf24;
 
 	std::string Temperature = "";
 	std::string Humidity = "";
 	std::string Pressure = "";
 	std::string UDPreturn = "";
 	std::string q = "";
+
+	char nrfTest[5] = { 'a', 'b', 'c', 'd', 'e' };
 
 	std::string UDPrequest = "";
 
@@ -59,12 +63,13 @@ int main(void)
 	lcd.WriteCommand(LCD_SECOND_ROW);
 	lcd.WriteString("Strikes: 0");
 
-	gpioSetMode(27, PI_INPUT);
+	gpioSetMode(27, PI_OUTPUT);
 	gpioSetMode(26, PI_INPUT);
 	gpioSetMode(17, PI_INPUT);
 	gpioSetMode(6, PI_INPUT);
 	gpioSetMode(19, PI_OUTPUT);
 	gpioSetPullUpDown(17, PI_PUD_OFF);
+
 
 	sensor.Initialize(0x76,		// Initialize BME280
 		sensor.humidityOversamplingX1, 
@@ -75,6 +80,23 @@ int main(void)
 	oled.DisplayOff();
 	tempSensor.Mount();
 	tempSensor.Initialize();
+
+	if (nrf24.Initialize(1) >= 0)
+	{
+		char nrTest[6] = { 0xE7, 0xE6, 0xE5, 0xE4, 0xE3, 0xE2 };
+		nrf24.WriteRegisterBytes(0x0A, nrTest, 5);
+		nrf24.WriteRegister(0x0D, 0x7A);
+		nrf24.ReadRegisterBytes(0x0A, nrf24.rxAddr, 5);
+		std::cout << "NRF24L10 Radio Opened" << std::endl;
+		std::cout << "========================================================" << std::endl;
+		std::cout << "NRF24L10 Radio Read: " << std::hex << (int)nrf24.ReadRegister(0x0D) << std::endl;
+		std::cout << "NRF24L10 Radio Multi Read: " << std::hex << (int)nrf24.rxAddr[1] << std::endl;
+		std::cout << "========================================================" << std::endl;
+	}
+	else
+	{
+		std::cout << "NRF24L10 could not be opened" << std::endl;
+	}
 
 	if (lightningDetector.Initialize(0) >= 0)
 	{
@@ -88,8 +110,8 @@ int main(void)
 	gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
 	gpioSetISRFunc(17, RISING_EDGE, 0, As3935CallBack);
 
-	gpioISRFunc_t PbCallBack = ButtonPushed;				// Setup Interrupt Callback
-	gpioSetISRFunc(6, RISING_EDGE, 0, ButtonPushed);
+	gpioISRFunc_t NrfCallBack = NrfInterrupt;				// Setup Interrupt Callback
+	gpioSetISRFunc(22, FALLING_EDGE, 0, NrfInterrupt);
 
 	// ==================== UDP Server Code ==========================
 	
@@ -309,7 +331,13 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 	return;
 }
 
-void ButtonPushed(int gpio, int level, uint32_t tick)
+void NrfInterrupt(int gpio, int level, uint32_t tick)
 {
 	gpioWrite(19, !gpioRead(19));
+
+	// TODO:
+	// Read interrupt flag
+	// action appropriate code block based on iterrupt flag set
+	// clear interrupt flag
+
 }
