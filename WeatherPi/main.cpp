@@ -24,8 +24,11 @@
 
 //gpioISRFunc_t PushedButton;
 
+
+// Need to make these global to be able tom use them in the iterrupt callback functions
 AS3935 lightningDetector;
 I2CLCD lcd;
+NRF24L10 nrf24;
 
 void As3935Interrupt(int gpio, int level, uint32_t tick);
 void NrfInterrupt(int gpio, int level, uint32_t tick);
@@ -37,7 +40,6 @@ int main(void)
 	BME280 sensor;
 	SSD1306 oled;
 	DS18B20 tempSensor;
-	NRF24L10 nrf24;
 
 	std::string Temperature = "";
 	std::string Humidity = "";
@@ -107,8 +109,8 @@ int main(void)
 		std::cout << "could not open AS3935" << std::endl;
 	}
 	
-	gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
-	gpioSetISRFunc(17, RISING_EDGE, 0, As3935CallBack);
+	//gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
+	//gpioSetISRFunc(17, RISING_EDGE, 0, As3935CallBack);
 
 	gpioISRFunc_t NrfCallBack = NrfInterrupt;				// Setup Interrupt Callback
 	gpioSetISRFunc(22, FALLING_EDGE, 0, NrfInterrupt);
@@ -241,7 +243,12 @@ int main(void)
 
 		case '8':	// Section to test some stuff
 		{
-			lcd.BacklightToggle();
+			std::cout << "============================== nrf Write stuff =======================" << std::endl;
+			std::cout << "Status Register: " << std::hex << (int)nrf24.ReadStatus() << std::endl;
+			std::string toSend = "Test String";
+			//lcd.BacklightToggle();
+			nrf24.TransmitToChannel(toSend.c_str(), 1);
+			std::cout << "Status Register: " << std::hex << (int)nrf24.ReadStatus() << std::endl;
 		}
 		break;
 		}
@@ -333,11 +340,44 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 
 void NrfInterrupt(int gpio, int level, uint32_t tick)
 {
+	std::cout << "==================================== nrf24L10 ===========================================" << std::endl;
+	std::cout << "Entered nrf interrupt callback" << std::endl;
+
 	gpioWrite(19, !gpioRead(19));
 
-	// TODO:
-	// Read interrupt flag
-	// action appropriate code block based on iterrupt flag set
-	// clear interrupt flag
+	char status = 0;
 
+	status = nrf24.ReadStatus();
+
+	if ((status & 0x40))		// RX Ready Interrupt
+	{
+		std::cout << "==================================== nrf24L10 ===========================================" << std::endl;
+		std::cout << "RX Ready interrupt triggered" << std::endl;
+		nrf24.WriteRegister(0x07, (status | 0x40));		// Clear RX interrupt flag
+		std::cout << "RX Ready interrupt flag cleared" << std::endl;
+		// TODO
+		// Check what channel sent the data
+		// Check how many bytes was sent
+		// Decide how to return retreived data to main application
+	}
+
+	if ((status & 0x20))		// TX data sent interrupt flag
+	{
+		std::cout << "==================================== nrf24L10 ===========================================" << std::endl;
+		std::cout << "TX data sent interrupt triggered" << std::endl;
+		nrf24.PRXmode();
+		std::cout << "nrf24L10 set to RX mode" << std::endl;
+		nrf24.WriteRegister(0x07, (status | 0x20));		// Clear TX data sent interrupt flag
+		std::cout << "TX data sent interrupt flag cleared" << std::endl;
+	}
+
+	if ((status & 0x10))		// Resend interrupt flag
+	{
+		std::cout << "==================================== nrf24L10 ===========================================" << std::endl;
+		std::cout << "Resent retry interrupt triggered" << std::endl;
+		nrf24.WriteRegister(0x07, (status | 0x10));		// Clear resend interrupt flag
+		std::cout << "Resent retry interrupt flag cleared" << std::endl;
+	}
+	// TODO
+	// Set default RX address
 }

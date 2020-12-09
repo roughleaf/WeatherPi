@@ -43,7 +43,12 @@ public:
 	int WriteRegister(unsigned char reg, unsigned char value);
 	int WriteRegisterBytes(unsigned char reg, char* value, int len);
 	char ReadPayload(char* rxBuff);
-	int LoadPayload(char* txBuff);
-	int TransmitToChannel(char* txBuff, char channel);
+	int LoadPayload(const char* txBuff);
+	int TransmitToChannel(const char* txBuff, char channel);
+	char ReadStatus(void);
+	void PTXmode(void);
+	void PRXmode(void);
+	void FlushTX(void);
+	void FlushRX(void);
 };
 

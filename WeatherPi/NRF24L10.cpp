@@ -9,10 +9,13 @@ int NRF24L10::Initialize(int channel)
 		gpioWrite(NRF24_CE, 0);
 		handle = spiOpen(channel, 100000, 0);
 
-		WriteRegister(CONFIG_REG, 0x1B);	// RX & TX interrupt enabled, PRX mode, Power up. Use TX interrupt to return device to PRX Mode after transmit.
+		WriteRegister(CONFIG_REG, 0x0A);	// RX, TX & Max Retry interrupt enabled, PTX mode, Power up. Use TX interrupt to return device to PRX Mode after transmit.
 		WriteRegister(EN_RXADDR_REG, 0x3F);	// Enable all data pipe RX addresses
 		WriteRegister(RF_CH_REG, 0x50);		// Set to 2480Mhz, outer edge of chanel 13 but still within legal limits
 		WriteRegister(RF_SETUP_REG, 0x01);	// Set gain to minimum for testing
+		WriteRegister(STATUS_REG, 0x70);
+		FlushRX();
+		FlushTX();
 
 		return handle;
 	}
@@ -91,7 +94,7 @@ char NRF24L10::ReadPayload(char* rxBuff)		// TODO: Add length argument. length w
 	return status;
 }
 
-int NRF24L10::LoadPayload(char* txBuff)
+int NRF24L10::LoadPayload(const char* txBuff)
 {
 	char instruction = W_TX_PAYLOAD;
 	int len = strlen(txBuff);
@@ -107,13 +110,12 @@ int NRF24L10::LoadPayload(char* txBuff)
 	return 0;
 }
 
-int NRF24L10::TransmitToChannel(char* txBuff, char channel)
+int NRF24L10::TransmitToChannel(const char* txBuff, char channel)
 {
 	char chan[5] = { 0x1F, 0x2F, 0x3F, 0x4F, channel };
 
-	char conf = ReadRegister(CONFIG_REG);
-	conf &= 0xFE;
-	WriteRegister(CONFIG_REG, conf);					// Set PTX mode
+	PTXmode();					// Set PTX mode
+	FlushTX();
 
 	WriteRegisterBytes(RX_ADDR_P0_REG, chan, 5);
 	WriteRegisterBytes(TX_ADDR_REG, chan, 5);		// Set channel to write to and automatic acknowledge
@@ -125,5 +127,41 @@ int NRF24L10::TransmitToChannel(char* txBuff, char channel)
 	gpioWrite(NRF24_CE, 0);							// Signal to send
 
 	return 0;
+}
+
+char NRF24L10::ReadStatus(void)
+{
+	char txBuff[1] = { 0xFF };
+	char rxBuff[1] = { 0xFF };
+
+	spiXfer(handle, txBuff, rxBuff, 1);
+
+	return rxBuff[0];
+}
+
+void NRF24L10::PTXmode(void)
+{
+	char conf = ReadRegister(CONFIG_REG);
+	conf &= 0xFE;
+	WriteRegister(CONFIG_REG, conf);
+}
+
+void NRF24L10::PRXmode(void)
+{
+	char conf = ReadRegister(CONFIG_REG);
+	conf |= 0x01;
+	WriteRegister(CONFIG_REG, conf);
+}
+
+void NRF24L10::FlushTX(void)
+{
+	char buff[1] = { 0xE1 };
+	spiWrite(handle, buff, 1);
+}
+
+void NRF24L10::FlushRX(void)
+{
+	char buff[1] = { 0xE2 };
+	spiWrite(handle, buff, 1);
 }
 
