@@ -109,8 +109,8 @@ int main(void)
 		std::cout << "could not open AS3935" << std::endl;
 	}
 	
-	//gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
-	//gpioSetISRFunc(17, RISING_EDGE, 0, As3935CallBack);
+	gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
+	gpioSetISRFunc(17, RISING_EDGE, 0, As3935CallBack);
 
 	gpioISRFunc_t NrfCallBack = NrfInterrupt;				// Setup Interrupt Callback
 	gpioSetISRFunc(22, FALLING_EDGE, 0, NrfInterrupt);
@@ -122,7 +122,8 @@ int main(void)
 	struct sockaddr_in servaddr, cliaddr;
 
 	// Creating socket file descriptor 
-	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) 
+	{
 		perror("socket creation failed");
 		exit(EXIT_FAILURE);
 	}
@@ -243,12 +244,9 @@ int main(void)
 
 		case '8':	// Section to test some stuff
 		{
-			std::cout << "============================== nrf Write stuff =======================" << std::endl;
-			std::cout << "Status Register: " << std::hex << (int)nrf24.ReadStatus() << std::endl;
 			std::string toSend = "Test String";
 			//lcd.BacklightToggle();
 			nrf24.TransmitToChannel(toSend.c_str(), 1);
-			std::cout << "Status Register: " << std::hex << (int)nrf24.ReadStatus() << std::endl;
 		}
 		break;
 		}
@@ -378,6 +376,8 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		nrf24.WriteRegister(0x07, (status | 0x10));		// Clear resend interrupt flag
 		std::cout << "Resent retry interrupt flag cleared" << std::endl;
 	}
+
+	std::cout << "=========================================================================================" << std::endl;
 	// TODO
 	// Set default RX address
 }
