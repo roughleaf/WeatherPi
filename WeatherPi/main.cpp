@@ -349,7 +349,7 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 
 	status = nrf24.ReadStatus();
 
-	if ((status & 0x40))		// RX Ready Interrupt
+	if (status & 0x40)		// RX Ready Interrupt
 	{
 		std::cout << "==================================== nrf24L10 ===========================================" << std::endl;
 		std::cout << "RX Ready interrupt triggered" << std::endl;
@@ -361,7 +361,7 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		// Decide how to return retreived data to main application
 	}
 
-	if ((status & 0x20))		// TX data sent interrupt flag
+	if (status & 0x20)		// TX data sent interrupt flag
 	{
 		std::cout << "==================================== nrf24L10 ===========================================" << std::endl;
 		std::cout << "TX data sent interrupt triggered" << std::endl;
@@ -371,7 +371,7 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		std::cout << "TX data sent interrupt flag cleared" << std::endl;
 	}
 
-	if ((status & 0x10))		// Resend interrupt flag
+	if (status & 0x10)		// Resend interrupt flag
 	{
 		std::cout << "==================================== nrf24L10 ===========================================" << std::endl;
 		std::cout << "Resent retry interrupt triggered" << std::endl;
