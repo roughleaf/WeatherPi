@@ -35,7 +35,7 @@ private:
 	int handle = -1;
 
 public:
-	char rxAddr[6] = { 0, 0, 0, 0, 0, 0 };
+	char rxAddr[5] = { 1, 2, 3, 4, 1 };
 
 	int Initialize(int channel);
 	char ReadRegister(unsigned char reg);

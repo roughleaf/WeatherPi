@@ -85,9 +85,9 @@ int main(void)
 
 	if (nrf24.Initialize(1) >= 0)
 	{
-		char nrTest[6] = { 0xE7, 0xE6, 0xE5, 0xE4, 0xE3, 0xE2 };
+		char nrTest[6] = { 1, 2, 3, 4, 1 };
 		nrf24.WriteRegisterBytes(0x0A, nrTest, 5);
-		nrf24.WriteRegister(0x0D, 0x7A);
+		nrf24.WriteRegister(0x0D, 0x03);
 		nrf24.ReadRegisterBytes(0x0A, nrf24.rxAddr, 5);
 		std::cout << "NRF24L10 Radio Opened" << std::endl;
 		std::cout << "========================================================" << std::endl;
@@ -244,7 +244,7 @@ int main(void)
 
 		case '8':	// Section to test some stuff
 		{
-			std::string toSend = "Test String";
+			std::string toSend = "Hello!";
 			//lcd.BacklightToggle();
 			nrf24.TransmitToChannel(toSend.c_str(), 1);
 		}
@@ -270,7 +270,7 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 	std::cout << "AS3935 Interrupt Triggered" << std::endl;
 	std::cout << "==============================================" << std::endl;
 	usleep(5000);						// Wait 5 ms for AS3935 to finish operations
-	gpioWrite(27, !gpioRead(27));		// 
+	//gpioWrite(27, !gpioRead(27));		// Cause of a bug that pulled CE pin on NRF24L10 high. This is legacy code from development hardware
 
 	int Lint = (int)lightningDetector.ReadRegister(0x03) & 0x0F;
 
@@ -371,9 +371,13 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 
 	if (status & 0x10)		// Resend interrupt flag
 	{
+		//gpioWrite(NRF24_CE, 0);			// Patch to a bug, root cause was code leftover from legacy hardware in As3935Interrupt function. Bug was fixed at source.
+		char buftemp[5] = { 0 };
 		std::cout << "==================================== nrf24L10 ===========================================" << std::endl;
 		std::cout << "Resent retry interrupt triggered" << std::endl;
 		nrf24.WriteRegister(0x07, (status | 0x10));		// Clear resend interrupt flag
+		nrf24.ReadRegisterBytes(RX_ADDR_P0_REG, buftemp, 5);
+		std::cout << "Datapipe Int: " << (int)buftemp[0] << (int)buftemp[1] << (int)buftemp[2] << (int)buftemp[3] << (int)buftemp[4] << std::endl;
 		std::cout << "Resent retry interrupt flag cleared" << std::endl;
 	}
 

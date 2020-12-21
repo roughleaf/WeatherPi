@@ -1,6 +1,7 @@
 #include "NRF24L10.hpp"
 #include <unistd.h>
 #include <string.h>
+#include <iostream>
 
 int NRF24L10::Initialize(int channel)
 {
@@ -10,9 +11,10 @@ int NRF24L10::Initialize(int channel)
 		handle = spiOpen(channel, 100000, 0);
 
 		WriteRegister(CONFIG_REG, 0x0A);	// RX, TX & Max Retry interrupt enabled, PTX mode, Power up. Use TX interrupt to return device to PRX Mode after transmit.
+		WriteRegister(EN_AA_REG, 0x3F);	// Enable auto acknowledge for all data pipes
 		WriteRegister(EN_RXADDR_REG, 0x3F);	// Enable all data pipe RX addresses
 		WriteRegister(RF_CH_REG, 0x50);		// Set to 2480Mhz, outer edge of chanel 13 but still within legal limits
-		WriteRegister(RF_SETUP_REG, 0x01);	// Set gain to minimum for testing
+		WriteRegister(RF_SETUP_REG, 0x03);	// Set gain to minimum for testing
 		WriteRegister(STATUS_REG, 0x70);
 		FlushRX();
 		FlushTX();
@@ -112,7 +114,7 @@ int NRF24L10::LoadPayload(const char* txBuff)
 
 int NRF24L10::TransmitToChannel(const char* txBuff, char channel)
 {
-	char chan[5] = { 0x1F, 0x2F, 0x3F, 0x4F, channel };
+	char chan[5] = { 1, 2, 3, 4, channel };
 
 	PTXmode();					// Set PTX mode
 	FlushTX();
@@ -125,6 +127,9 @@ int NRF24L10::TransmitToChannel(const char* txBuff, char channel)
 	gpioWrite(NRF24_CE, 1);
 	usleep(15);
 	gpioWrite(NRF24_CE, 0);							// Signal to send
+
+	std::cout << "Transmitting to Channel: " << (int)channel << std::endl;
+	std::cout << "Datapipe: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)chan[4] << std::endl;
 
 	return 0;
 }

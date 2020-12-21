@@ -47,7 +47,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <ProjectPublicIncludePath>E:\Users\Anacronym\Documents\Projects\Visual Studio\Libraries\pigpio;$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
+    <ProjectPublicIncludePath>D:\Users\Anacronym\Documents\Projects\Visual Studio\Libraries\pigpio;$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
