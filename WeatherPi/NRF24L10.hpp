@@ -28,6 +28,7 @@
 #define R_RX_PAYLOAD 0x61
 #define W_TX_PAYLOAD 0xA0
 #define NRF24_CE 27
+#define TX_ADDR 0x10
 
 class NRF24L10
 {
@@ -35,14 +36,13 @@ private:
 	int handle = -1;
 
 public:
-	char rxAddr[5] = { 1, 2, 3, 4, 1 };
 
 	int Initialize(int channel);
 	char ReadRegister(unsigned char reg);
 	char ReadRegisterBytes(unsigned char reg, char* buff, int len);
 	int WriteRegister(unsigned char reg, unsigned char value);
 	int WriteRegisterBytes(unsigned char reg, char* value, int len);
-	char ReadPayload(char* rxBuff);
+	char ReadPayload(char* rxBuff, int len);
 	int LoadPayload(const char* txBuff);
 	int TransmitToChannel(const char* txBuff, char channel);
 	char ReadStatus(void);
@@ -50,5 +50,6 @@ public:
 	void PRXmode(void);
 	void FlushTX(void);
 	void FlushRX(void);
+	void ResetRXAddr(void);
 };
 

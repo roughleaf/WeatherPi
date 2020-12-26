@@ -18,6 +18,7 @@
 #include <cstring>
 #include <sstream>
 #include <iomanip>
+#include <ctime>
 
 #define PORT     8080 
 #define MAXLINE 1024 
@@ -85,15 +86,7 @@ int main(void)
 
 	if (nrf24.Initialize(1) >= 0)
 	{
-		char nrTest[6] = { 1, 2, 3, 4, 1 };
-		nrf24.WriteRegisterBytes(0x0A, nrTest, 5);
-		nrf24.WriteRegister(0x0D, 0x03);
-		nrf24.ReadRegisterBytes(0x0A, nrf24.rxAddr, 5);
 		std::cout << "NRF24L10 Radio Opened" << std::endl;
-		std::cout << "========================================================" << std::endl;
-		std::cout << "NRF24L10 Radio Read: " << std::hex << (int)nrf24.ReadRegister(0x0D) << std::endl;
-		std::cout << "NRF24L10 Radio Multi Read: " << std::hex << (int)nrf24.rxAddr[1] << std::endl;
-		std::cout << "========================================================" << std::endl;
 	}
 	else
 	{
@@ -245,8 +238,29 @@ int main(void)
 		case '8':	// Section to test some stuff
 		{
 			std::string toSend = "Hello!";
+			char chan[5] = { 0 };
 			//lcd.BacklightToggle();
-			nrf24.TransmitToChannel(toSend.c_str(), 1);
+			nrf24.TransmitToChannel(toSend.c_str(), 1);			
+			std::cout << "=================================================================================== " << std::endl;
+			nrf24.ReadRegisterBytes(RX_ADDR_P0_REG, chan, 5);
+			std::cout << "RX channel 0: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)chan[4] << std::endl;
+			nrf24.ReadRegisterBytes(RX_ADDR_P1_REG, chan, 5);
+			std::cout << "RX channel 1: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)chan[4] << std::endl;
+			std::cout << "RX channel 2: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P2_REG) << std::endl;
+			std::cout << "RX channel 3: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P3_REG) << std::endl;
+			std::cout << "RX channel 4: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P4_REG) << std::endl;
+			std::cout << "RX channel 5: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P5_REG) << std::endl;
+			nrf24.ReadRegisterBytes(TX_ADDR_REG, chan, 5);
+			std::cout << "TX channel: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)chan[4] << std::endl;
+			std::cout << "=================================================================================== " << std::endl;
+			std::cout << "Register EN_AA: " << (int)nrf24.ReadRegister(EN_AA_REG) << std::endl;
+			std::cout << "Register EN_RXADDR: " << (int)nrf24.ReadRegister(EN_RXADDR_REG) << std::endl;
+			std::cout << "Register SETUP_AW: " << (int)nrf24.ReadRegister(SETUP_AW_REG) << std::endl;
+			std::cout << "Register Config: " << (int)nrf24.ReadRegister(CONFIG_REG) << std::endl;
+			std::cout << "Register Status: " << (int)nrf24.ReadRegister(STATUS_REG) << std::endl;
+			std::cout << "Register DYNPD: " << (int)nrf24.ReadRegister(0x1C) << std::endl;
+			std::cout << "Register Feature: " << (int)nrf24.ReadRegister(0x1D) << std::endl;
+			std::cout << "=================================================================================== " << std::endl;
 		}
 		break;
 		}
@@ -349,10 +363,19 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 
 	if (status & 0x40)		// RX Ready Interrupt
 	{
+		int datapipe = status & 0x0E;
+		datapipe >>= 1;
+
+		char rxBuff[33] = { 0 };
+		nrf24.ReadPayload(rxBuff, 32);
+		rxBuff[6] = '\0';
 		std::cout << "==================================== nrf24L10 ===========================================" << std::endl;
 		std::cout << "RX Ready interrupt triggered" << std::endl;
+		std::cout << "Received String: " << rxBuff << " From Datapipe:" << (int)datapipe << std::endl;
 		nrf24.WriteRegister(0x07, (status | 0x40));		// Clear RX interrupt flag
 		std::cout << "RX Ready interrupt flag cleared" << std::endl;
+		nrf24.PRXmode();
+		//gpioWrite(NRF24_CE, 1);
 		// TODO
 		// Check what channel sent the data
 		// Check how many bytes was sent
@@ -367,6 +390,10 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		std::cout << "nrf24L10 set to RX mode" << std::endl;
 		nrf24.WriteRegister(0x07, (status | 0x20));		// Clear TX data sent interrupt flag
 		std::cout << "TX data sent interrupt flag cleared" << std::endl;
+		nrf24.ResetRXAddr();							// Important to keep Datapipe 0 available
+		std::cout << "RX and TX addresses set to default values" << std::endl;
+		nrf24.PRXmode();
+		//gpioWrite(NRF24_CE, 1);
 	}
 
 	if (status & 0x10)		// Resend interrupt flag
@@ -379,8 +406,13 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		nrf24.ReadRegisterBytes(RX_ADDR_P0_REG, buftemp, 5);
 		std::cout << "Datapipe Int: " << (int)buftemp[0] << (int)buftemp[1] << (int)buftemp[2] << (int)buftemp[3] << (int)buftemp[4] << std::endl;
 		std::cout << "Resent retry interrupt flag cleared" << std::endl;
+		nrf24.PRXmode();
+		//gpioWrite(NRF24_CE, 1);
 	}
 
+	nrf24.WriteRegister(0x07, (status | 0x70));		// Clear all interupt flags
+	nrf24.ResetRXAddr();							// Important to keep Datapipe 0 available
+	nrf24.PRXmode();
 	std::cout << "=========================================================================================" << std::endl;
 	// TODO
 	// Set default RX address
