@@ -75,9 +75,11 @@
     <ClCompile Include="BME280.cpp" />
     <ClCompile Include="DS18B20.cpp" />
     <ClCompile Include="I2CLCD.cpp" />
+    <ClCompile Include="Icodec.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="NRF24L10.cpp" />
+    <ClCompile Include="NRF24L01.cpp" />
     <ClCompile Include="SSD1306.cpp" />
+    <ClCompile Include="STIME.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ADS1115.hpp" />
@@ -86,9 +88,11 @@
     <ClInclude Include="DS18B20.hpp" />
     <ClInclude Include="GFXFonts.hpp" />
     <ClInclude Include="I2CLCD.hpp" />
+    <ClInclude Include="Icodec.hpp" />
     <ClInclude Include="Mono18pt7b.hpp" />
-    <ClInclude Include="NRF24L10.hpp" />
+    <ClInclude Include="NRF24L01.hpp" />
     <ClInclude Include="SSD1306.hpp" />
+    <ClInclude Include="STIME.hpp" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>

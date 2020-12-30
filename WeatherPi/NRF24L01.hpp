@@ -25,15 +25,29 @@
 #define RX_PW_P4_REG 0x15
 #define RX_PW_P5_REG 0x16
 #define FIFO_STATUS_REG 0x17
+#define DYNPD_REG 0x1C
+#define FEATURE_REG 0x1D
+
+
 #define R_RX_PAYLOAD 0x61
 #define W_TX_PAYLOAD 0xA0
+#define ACTIVATE 0x50
+#define R_RX_PL_WID 0x60
+
 #define NRF24_CE 27
 #define TX_ADDR 0x10
 
-class NRF24L10
+class NRF24L01
 {
 private:
 	int handle = -1;
+
+	char channelP0[5] = { 0xE7, 0xE7, 0xE7, 0xE7, 0xE7 };
+	char channelP1[5] = { 0xC2, 0xC2, 0xC2, 0xC2, 0xC2 };
+	char channelP2[5] = { 0xC2, 0xC2, 0xC2, 0xC2, 0xC3 };
+	char channelP3[5] = { 0xC2, 0xC2, 0xC2, 0xC2, 0xC4 };
+	char channelP4[5] = { 0xC2, 0xC2, 0xC2, 0xC2, 0xC5 };
+	char channelP5[5] = { 0xC2, 0xC2, 0xC2, 0xC2, 0xC6 };
 
 public:
 
@@ -43,13 +57,17 @@ public:
 	int WriteRegister(unsigned char reg, unsigned char value);
 	int WriteRegisterBytes(unsigned char reg, char* value, int len);
 	char ReadPayload(char* rxBuff, int len);
-	int LoadPayload(const char* txBuff);
-	int TransmitToChannel(const char* txBuff, char channel);
+	int LoadPayload(const char* txBuff, int length);
+	int TransmitData(const char* txBuff, int length);
 	char ReadStatus(void);
 	void PTXmode(void);
 	void PRXmode(void);
 	void FlushTX(void);
 	void FlushRX(void);
 	void ResetRXAddr(void);
+	void Powerdown(void);
+	void Powerup(void);
+	void Activate(void);
+	int GetRXWidth(void);
 };
 

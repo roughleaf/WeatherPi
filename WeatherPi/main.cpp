@@ -7,7 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include "Mono18pt7b.hpp"
-#include "NRF24L10.hpp"
+#include "NRF24L01.hpp"
 #include <string.h>
 #include <math.h>
 #include <unistd.h> 
@@ -19,6 +19,8 @@
 #include <sstream>
 #include <iomanip>
 #include <ctime>
+#include "STIME.hpp"
+#include "Icodec.hpp"
 
 #define PORT     8080 
 #define MAXLINE 1024 
@@ -29,7 +31,7 @@
 // Need to make these global to be able tom use them in the iterrupt callback functions
 AS3935 lightningDetector;
 I2CLCD lcd;
-NRF24L10 nrf24;
+NRF24L01 nrf24;
 
 void As3935Interrupt(int gpio, int level, uint32_t tick);
 void NrfInterrupt(int gpio, int level, uint32_t tick);
@@ -237,19 +239,26 @@ int main(void)
 
 		case '8':	// Section to test some stuff
 		{
+			STIME stime;
+			stime.GetSystemTime();
+
+			char datetimeTest[13] = { 0 };
+			icodec::BuildTimeDateByteString(datetimeTest, 0);
+
 			std::string toSend = "Hello!";
 			char chan[5] = { 0 };
 			//lcd.BacklightToggle();
-			nrf24.TransmitToChannel(toSend.c_str(), 1);			
+			nrf24.TransmitData(datetimeTest, 13);
+			//nrf24.TransmitToChannel(toSend.c_str(), 0);			
 			std::cout << "=================================================================================== " << std::endl;
 			nrf24.ReadRegisterBytes(RX_ADDR_P0_REG, chan, 5);
 			std::cout << "RX channel 0: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)chan[4] << std::endl;
 			nrf24.ReadRegisterBytes(RX_ADDR_P1_REG, chan, 5);
-			std::cout << "RX channel 1: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)chan[4] << std::endl;
-			std::cout << "RX channel 2: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P2_REG) << std::endl;
-			std::cout << "RX channel 3: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P3_REG) << std::endl;
-			std::cout << "RX channel 4: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P4_REG) << std::endl;
-			std::cout << "RX channel 5: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P5_REG) << std::endl;
+			//std::cout << "RX channel 1: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)chan[4] << std::endl;
+			//std::cout << "RX channel 2: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P2_REG) << std::endl;
+			//std::cout << "RX channel 3: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P3_REG) << std::endl;
+			//std::cout << "RX channel 4: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P4_REG) << std::endl;
+			//std::cout << "RX channel 5: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)nrf24.ReadRegister(RX_ADDR_P5_REG) << std::endl;
 			nrf24.ReadRegisterBytes(TX_ADDR_REG, chan, 5);
 			std::cout << "TX channel: " << (int)chan[0] << (int)chan[1] << (int)chan[2] << (int)chan[3] << (int)chan[4] << std::endl;
 			std::cout << "=================================================================================== " << std::endl;
@@ -261,6 +270,13 @@ int main(void)
 			std::cout << "Register DYNPD: " << (int)nrf24.ReadRegister(0x1C) << std::endl;
 			std::cout << "Register Feature: " << (int)nrf24.ReadRegister(0x1D) << std::endl;
 			std::cout << "=================================================================================== " << std::endl;
+
+			std::cout << "Current Date: " << stime.Date << std::endl;
+			std::cout << "Current Time: " << stime.Time << std::endl;
+
+			std::cout << "BCD string: " << (int)datetimeTest[0] << (int)datetimeTest[1] << (int)datetimeTest[2] << (int)datetimeTest[3] << (int)datetimeTest[4] << (int)datetimeTest[5];
+			std::cout << (int)datetimeTest[6] << (int)datetimeTest[7] << (int)datetimeTest[8] << (int)datetimeTest[9] << (int)datetimeTest[10] << (int)datetimeTest[11] << std::endl;
+
 		}
 		break;
 		}
@@ -363,15 +379,57 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 
 	if (status & 0x40)		// RX Ready Interrupt
 	{
-		int datapipe = status & 0x0E;
-		datapipe >>= 1;
+		float BMEtemp;
+		float BMEpressure;
+		float DStemp;
+		int Humididty;
 
-		char rxBuff[33] = { 0 };
-		nrf24.ReadPayload(rxBuff, 32);
-		rxBuff[6] = '\0';
+		typedef union
+		{
+			float number;
+			uint8_t bytes[4];
+		} FLOATUNION_t;
+
+		FLOATUNION_t toFloat;
+
+		int rxWidth = nrf24.GetRXWidth();
+		char rxBuff[32] = { 0 };
+		nrf24.ReadPayload(rxBuff, rxWidth);
+		int datapipe = (int)rxBuff[1];
+
+		toFloat.bytes[0] = rxBuff[14];
+		toFloat.bytes[1] = rxBuff[15];
+		toFloat.bytes[2] = rxBuff[16];
+		toFloat.bytes[3] = rxBuff[17];
+		BMEtemp = toFloat.number;
+
+		toFloat.bytes[0] = rxBuff[19];
+		toFloat.bytes[1] = rxBuff[20];
+		toFloat.bytes[2] = rxBuff[21];
+		toFloat.bytes[3] = rxBuff[22];
+		BMEpressure = toFloat.number;
+
+		toFloat.bytes[0] = rxBuff[23];
+		toFloat.bytes[1] = rxBuff[24];
+		toFloat.bytes[2] = rxBuff[25];
+		toFloat.bytes[3] = rxBuff[26];
+		DStemp = toFloat.number;
+
+		Humididty = (int)rxBuff[18];
+
 		std::cout << "==================================== nrf24L10 ===========================================" << std::endl;
 		std::cout << "RX Ready interrupt triggered" << std::endl;
-		std::cout << "Received String: " << rxBuff << " From Datapipe:" << (int)datapipe << std::endl;
+		std::cout << "RX data width: " << rxWidth << std::endl;
+		std::cout << "RX Node ID: " << datapipe << std::endl;
+		std::cout << "Received: " << (int)rxBuff[0] << (int)rxBuff[1] << (int)rxBuff[2] << (int)rxBuff[3] << (int)rxBuff[4] << (int)rxBuff[5] << (int)rxBuff[6] << (int)rxBuff[7];
+		std::cout << (int)rxBuff[8] << (int)rxBuff[9] << (int)rxBuff[10] << (int)rxBuff[11] << (int)rxBuff[12] << (int)rxBuff[13] << std::endl;
+
+		std::cout << "RX Node BME Temperature: " << BMEtemp << std::endl;
+		std::cout << "RX Node BME Pressure: " << BMEpressure << std::endl;
+		std::cout << "RX Node BME Humidity: " << Humididty << std::endl;
+		std::cout << "RX Node DS18B20 Temperature: " << DStemp << std::endl;
+
+		//std::cout << "Received String: " << rxBuff << " From Datapipe:" << (int)datapipe << std::endl;
 		nrf24.WriteRegister(0x07, (status | 0x40));		// Clear RX interrupt flag
 		std::cout << "RX Ready interrupt flag cleared" << std::endl;
 		nrf24.PRXmode();
@@ -411,7 +469,9 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 	}
 
 	nrf24.WriteRegister(0x07, (status | 0x70));		// Clear all interupt flags
-	nrf24.ResetRXAddr();							// Important to keep Datapipe 0 available
+	nrf24.ResetRXAddr();	
+	//nrf24.FlushRX();
+	//nrf24.FlushTX();
 	nrf24.PRXmode();
 	std::cout << "=========================================================================================" << std::endl;
 	// TODO
