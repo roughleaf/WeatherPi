@@ -46,16 +46,8 @@ int I2CLCD::Initialize(const unsigned char i2cBus, const unsigned char i2cAddr)
 		usleep(50000);
 		WriteCommand(0x04 | 0x02);
 		usleep(50000);
-		
-		std::cout << "LCD should be innitialized" << std::endl;
-
 	}
 	
-	else
-	{
-		std::cout << "could not innitialize LCD" << std::endl;
-	}
-
 	return handle;
 
 }

@@ -12,9 +12,9 @@ int DS18B20::Initialize()
 {
     if ((dirp = opendir(path)) == NULL)
     {
-        return 0;
+        return -1;
     }
-    // TODO: List all connected DS18B20 Devices.
+
     while ((direntp = readdir(dirp)) != NULL)
     {  
         if (strstr(direntp->d_name, "28-"))

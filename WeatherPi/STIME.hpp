@@ -33,6 +33,7 @@ public:
 
 	std::string Date;
 	std::string Time;
+	std::string SystemDateTime;
 
 	void GetSystemTime(void);
 };

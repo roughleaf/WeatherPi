@@ -12,8 +12,8 @@ int NRF24L01::Initialize(int channel)
 
 		WriteRegister(CONFIG_REG, 0x0D);	// RX, TX & Max Retry interrupt enabled, PRX mode, Power Down, 2 byte CRC
 
-		WriteRegister(EN_RXADDR_REG, 0x3F);	// Enable all data pipe RX addresses
-		WriteRegister(EN_AA_REG, 0x3F);	// Enable auto acknowledge for all data pipes
+		WriteRegister(EN_RXADDR_REG, 0x01);	// Enable only datapipe 0
+		WriteRegister(EN_AA_REG, 0x01);	// Enable auto acknowledge for datapipe 0
 		Powerup();
 
 		WriteRegister(SETUP_AW_REG, 0x03);

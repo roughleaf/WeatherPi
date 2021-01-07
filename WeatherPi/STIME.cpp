@@ -2,11 +2,7 @@
 
 int STIME::ToBCD(int n)
 {
-	//if (n > 0)
-	//{
-		return ((n / 10) << 4) | (n % 10);
-	//}
-	//return 0;
+	return ((n / 10) << 4) | (n % 10);
 }
 
 void STIME::GetSystemTime(void)
@@ -41,4 +37,10 @@ void STIME::GetSystemTime(void)
 
 	Date = std::to_string(Year) + "/" + std::to_string(Month) + "/" + std::to_string(Day);
 	Time = std::to_string(Hour) + ":" + std::to_string(Minute) + ":" + std::to_string(Second);
+	if (std::to_string(Second).length() == 1)
+	{
+		Time += "0";
+	}
+
+	SystemDateTime = Date + " " + Time;
 }
