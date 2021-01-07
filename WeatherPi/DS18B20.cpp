@@ -51,7 +51,7 @@ float DS18B20::GetTemperature()
     // Read the string following "t=".
     sscanf(temp, "t=%s", temp);
     // atof: changes string to float.
-    value = atof(temp) / 1000;
+    value = (float)atof(temp) / 1000;
 
     return value;
 }

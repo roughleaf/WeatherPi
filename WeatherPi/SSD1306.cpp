@@ -119,7 +119,7 @@ int SSD1306::DrawCharacter(const unsigned char character, int x, int y)
 		}
 	}
 
-	delete(charData);
+	delete charData;
 	return 0;
 }
 

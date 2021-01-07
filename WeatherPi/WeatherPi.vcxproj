@@ -70,7 +70,6 @@
     </RemotePostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ADS1115.cpp" />
     <ClCompile Include="AS3935.cpp" />
     <ClCompile Include="BME280.cpp" />
     <ClCompile Include="DS18B20.cpp" />
@@ -82,7 +81,6 @@
     <ClCompile Include="STIME.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ADS1115.hpp" />
     <ClInclude Include="AS3935.hpp" />
     <ClInclude Include="BME280.hpp" />
     <ClInclude Include="DS18B20.hpp" />

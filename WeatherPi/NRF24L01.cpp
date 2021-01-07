@@ -30,14 +30,7 @@ int NRF24L01::Initialize(int channel)
 		WriteRegister(FEATURE_REG, 0x04);	// Enable dynamic data width feature
 
 		WriteRegisterBytes(RX_ADDR_P0_REG, channelP0, 5);
-		WriteRegisterBytes(TX_ADDR_REG, channelP0, 5);
-		
-		/*WriteRegisterBytes(RX_ADDR_P1_REG, channelP1, 5);
-		
-		WriteRegister(RX_ADDR_P2_REG, channelP2[4]);
-		WriteRegister(RX_ADDR_P3_REG, channelP3[4]);
-		WriteRegister(RX_ADDR_P4_REG, channelP4[4]);
-		WriteRegister(RX_ADDR_P5_REG, channelP5[4]);*/		
+		WriteRegisterBytes(TX_ADDR_REG, channelP0, 5);		
 
 		FlushRX();
 		FlushTX();
@@ -129,46 +122,12 @@ int NRF24L01::LoadPayload(const char* txBuff, int length)
 	}
 
 	spiWrite(handle, buff, length + 1);
-	//spiWrite(handle, buff, 33);		// Make sure only 32 bytes gets transmitted for testing
 
 	return 0;
 }
 
 int NRF24L01::TransmitData(const char* txBuff, int length)
 {
-	//char chan[5] = { 1, 2, 3, 4, (channel) };
-	/*if (channel == 0)
-	{		
-		WriteRegisterBytes(RX_ADDR_P0_REG, channelP0, 5);
-		WriteRegisterBytes(TX_ADDR_REG, channelP0, 5);		// Set channel to write to and automatic acknowledge
-	}
-	else if (channel == 1)
-	{		
-		WriteRegisterBytes(RX_ADDR_P0_REG, channelP1, 5);
-		WriteRegisterBytes(TX_ADDR_REG, channelP1, 5);		// Set channel to write to and automatic acknowledge
-	}
-	else if (channel == 2)
-	{		
-		WriteRegisterBytes(RX_ADDR_P0_REG, channelP2, 5);
-		WriteRegisterBytes(TX_ADDR_REG, channelP2, 5);		// Set channel to write to and automatic acknowledge
-	}
-	else if (channel == 3)
-	{		
-		WriteRegisterBytes(RX_ADDR_P0_REG, channelP3, 5);
-		WriteRegisterBytes(TX_ADDR_REG, channelP3, 5);		// Set channel to write to and automatic acknowledge
-	}
-	else if (channel == 4)
-	{		
-		WriteRegisterBytes(RX_ADDR_P0_REG, channelP4, 5);
-		WriteRegisterBytes(TX_ADDR_REG, channelP4, 5);		// Set channel to write to and automatic acknowledge
-	}
-	else if (channel == 5)
-	{		
-		WriteRegisterBytes(RX_ADDR_P0_REG, channelP5, 5);
-		WriteRegisterBytes(TX_ADDR_REG, channelP5, 5);		// Set channel to write to and automatic acknowledge
-	}
-	else return 0;*/
-
 	PTXmode();					// Set PTX mode
 	FlushTX();
 
