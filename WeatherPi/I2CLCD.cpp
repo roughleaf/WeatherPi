@@ -108,7 +108,7 @@ int I2CLCD::WriteCharacter(const unsigned char data)
 
 int I2CLCD::WriteString(const char* buf)
 {
-	for (int i = 0; i < (strlen(buf)); i++)
+	for (unsigned int i = 0; i < (strlen(buf)); i++)
 	{
 		WriteCharacter(buf[i]);
 	}

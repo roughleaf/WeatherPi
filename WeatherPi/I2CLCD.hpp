@@ -23,7 +23,7 @@ class I2CLCD
 private:
 	int handle;
 	int WriteNibble(unsigned char nibble, unsigned char rs);
-	int BacklightOnOff = 0x08;
+	unsigned char BacklightOnOff = 0x08;
 
 public:
 	int Initialize(const unsigned char i2cAddr);

@@ -308,7 +308,7 @@ int SSD1306::PrintS(const char* buf, int x, int y) // TODO: Add protection to pr
 {
 	int xAdvance = x;
 
-	for (int i = 0; i < (strlen(buf)); i++)
+	for (unsigned int i = 0; i < (strlen(buf)); i++)
 	{
 		DrawCharacter(buf[i], xAdvance, y);
 		xAdvance += font.glyph[buf[i+font.first]].xAdvance;

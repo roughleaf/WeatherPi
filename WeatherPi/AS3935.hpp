@@ -11,7 +11,7 @@ public:
 	int DisturberCount = 0;
 
 	int Initialize(int channel);
-	unsigned char ReadRegister(unsigned char reg);
+	unsigned char ReadRegister(char reg);
 	int SetRegister(unsigned char reg, unsigned char value);
 };
 

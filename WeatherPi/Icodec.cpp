@@ -6,7 +6,7 @@ namespace icodec
 		STIME stime;
 		stime.GetSystemTime();
 
-		datetime[0] = channel;
+		datetime[0] = (char)channel;
 		datetime[1] = stime.BCD10year;
 		datetime[2] = stime.BCDyear;
 		datetime[3] = stime.BCD10month;

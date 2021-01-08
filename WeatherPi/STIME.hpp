@@ -8,7 +8,7 @@ private:
 	time_t now;
 	tm* SystemTime;
 
-	int ToBCD(int n);
+	unsigned char ToBCD(int n);
 
 public:
 	int Year;

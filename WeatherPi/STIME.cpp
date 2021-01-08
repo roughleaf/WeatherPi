@@ -1,6 +1,6 @@
 #include "STIME.hpp"
 
-int STIME::ToBCD(int n)
+unsigned char STIME::ToBCD(int n)
 {
 	return ((n / 10) << 4) | (n % 10);
 }

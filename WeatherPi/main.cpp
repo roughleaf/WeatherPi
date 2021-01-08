@@ -278,7 +278,6 @@ int main(void)
 		{
 			char datetimeTest[13] = { 0 };
 			icodec::BuildTimeDateByteString(datetimeTest, 0);
-			char chan[5] = { 0 };
 			//lcd.BacklightToggle();
 			nrf24.TransmitData(datetimeTest, 13);		
 			/*std::cout << "=================================================================================== " << std::endl;

@@ -28,7 +28,7 @@ int AS3935::Initialize(int channel)
 	}
 }
 
-unsigned char AS3935::ReadRegister(unsigned char reg)
+unsigned char AS3935::ReadRegister(char reg)
 {
 	char txBuff[2] = { reg | 0x40, 0x00 };	// was char txBuff[2] = { reg | 0x40, 0xC2 };
 	char rxBuff[2] = { 0xFF, 0xFF };
