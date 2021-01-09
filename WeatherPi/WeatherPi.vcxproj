@@ -72,6 +72,7 @@
   <ItemGroup>
     <ClCompile Include="AS3935.cpp" />
     <ClCompile Include="BME280.cpp" />
+    <ClCompile Include="ClimateData.cpp" />
     <ClCompile Include="DS18B20.cpp" />
     <ClCompile Include="I2CLCD.cpp" />
     <ClCompile Include="Icodec.cpp" />
@@ -83,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="AS3935.hpp" />
     <ClInclude Include="BME280.hpp" />
+    <ClInclude Include="ClimateData.hpp" />
     <ClInclude Include="DS18B20.hpp" />
     <ClInclude Include="GFXFonts.hpp" />
     <ClInclude Include="I2CLCD.hpp" />

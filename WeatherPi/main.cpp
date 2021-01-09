@@ -21,6 +21,7 @@
 #include <ctime>
 #include "STIME.hpp"
 #include "Icodec.hpp"
+#include "ClimateData.hpp"
 
 #define PORT 8080 
 #define MAXLINE 1024 
@@ -33,6 +34,8 @@ AS3935 lightningDetector;
 I2CLCD lcd;
 NRF24L01 nrf24;
 STIME systemTime;
+
+ClimateData nodeData[10];
 
 void As3935Interrupt(int gpio, int level, uint32_t tick);
 void NrfInterrupt(int gpio, int level, uint32_t tick);
@@ -381,63 +384,44 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 
 	if (status & 0x40)		// RX Ready Interrupt
 	{
-		float BMEtemp;
-		float BMEpressure;
-		float DStemp;
-		int Humididty;
+		std::cout << "\t\t - RX Ready interrupt triggered\n" << std::endl;
 
-		typedef union
-		{
-			float number;
-			uint8_t bytes[4];
-		} FLOATUNION_t;
-
-		FLOATUNION_t toFloat;
-
-		int rxWidth = nrf24.GetRXWidth();
+		int rxWidth = nrf24.GetRXWidth();		// How many bytes is in the received packet
 		char rxBuff[32] = { 0 };
+
 		nrf24.ReadPayload(rxBuff, rxWidth);
-		int datapipe = (int)rxBuff[1];
 
-		toFloat.bytes[0] = rxBuff[14];
-		toFloat.bytes[1] = rxBuff[15];
-		toFloat.bytes[2] = rxBuff[16];
-		toFloat.bytes[3] = rxBuff[17];
-		BMEtemp = toFloat.number;
+		int NodeID = (int)rxBuff[1];
 
-		toFloat.bytes[0] = rxBuff[19];
-		toFloat.bytes[1] = rxBuff[20];
-		toFloat.bytes[2] = rxBuff[21];
-		toFloat.bytes[3] = rxBuff[22];
-		BMEpressure = toFloat.number;
+		if ((NodeID >= 0) && (NodeID <= 9))
+		{
+			nodeData[NodeID].PopulateFromSensorNode(rxBuff);			
 
-		toFloat.bytes[0] = rxBuff[23];
-		toFloat.bytes[1] = rxBuff[24];
-		toFloat.bytes[2] = rxBuff[25];
-		toFloat.bytes[3] = rxBuff[26];
-		DStemp = toFloat.number;
+			std::cout << "\n\t\t - Node ID: " << nodeData[NodeID].NodeID << std::endl;
+			std::cout << "\t\t - Timestamp from node: " << nodeData[NodeID].Time << std::endl;
+			std::cout << "\t\t - Datestamp from node: " << nodeData[NodeID].Date << std::endl;
+			std::cout << "\t\t - RX Node BME Temperature: " << nodeData[NodeID].BME280Temperature << std::endl;
+			std::cout << "\t\t - RX Node BME Pressure: " << nodeData[NodeID].BME280Pressure << std::endl;
+			std::cout << "\t\t - RX Node BME Humidity: " << nodeData[NodeID].BME280Humididty << std::endl;
+			std::cout << "\t\t - RX Node DS18B20 Temperature: " << nodeData[NodeID].DS18B20Temperature << std::endl;
+			std::cout << "\t\t - RX Node Rain Count: " << nodeData[NodeID].RainCount << std::endl;
 
-		Humididty = (int)rxBuff[18];
+			std::cout << "\t\t - Rain Raw Data 0: " << (int)rxBuff[27] << std::endl;
+			std::cout << "\t\t - Rain Raw Data 1: " << (int)rxBuff[28] << std::endl;
+			std::cout << "\t\t - Rain Raw Data 2: " << (int)rxBuff[29] << std::endl;
+			std::cout << "\t\t - Rain Raw Data 3: " << (int)rxBuff[30] << std::endl;
+		}
+		else
+		{
+			std::cout << "\n\t\t *** Received node ID: "<< NodeID <<" is out of range" << std::endl;
+			std::cout << "\t\t *** Confirm SW1 dipswitch configuration and restart SensorNode\n" << std::endl;
+		}
 
-		std::cout << "\t\t - RX Ready interrupt triggered" << std::endl;
-		std::cout << "\t\t - RX data width: " << rxWidth << std::endl;
-		std::cout << "\t\t - RX Node ID: " << datapipe << std::endl;
-		std::cout << "\t\t - Received: " << (int)rxBuff[0] << (int)rxBuff[1] << (int)rxBuff[2] << (int)rxBuff[3] << (int)rxBuff[4] << (int)rxBuff[5] << (int)rxBuff[6] << (int)rxBuff[7];
-		std::cout << (int)rxBuff[8] << (int)rxBuff[9] << (int)rxBuff[10] << (int)rxBuff[11] << (int)rxBuff[12] << (int)rxBuff[13] << std::endl;
-
-		std::cout << "\t\t - RX Node BME Temperature: " << BMEtemp << std::endl;
-		std::cout << "\t\t - RX Node BME Pressure: " << BMEpressure << std::endl;
-		std::cout << "\t\t - RX Node BME Humidity: " << Humididty << std::endl;
-		std::cout << "\t\t - RX Node DS18B20 Temperature: " << DStemp << std::endl;
-
-		//std::cout << "Received String: " << rxBuff << " From Datapipe:" << (int)datapipe << std::endl;
 		nrf24.WriteRegister(0x07, (status | 0x40));		// Clear RX interrupt flag
-		std::cout << "\t\t - RX Ready interrupt flag cleared" << std::endl;
+		std::cout << "\n\t\t - RX Ready interrupt flag cleared" << std::endl;
 		nrf24.PRXmode();
 		//gpioWrite(NRF24_CE, 1);
 		// TODO
-		// Check what channel sent the data
-		// Check how many bytes was sent
 		// Decide how to return retreived data to main application
 	}
 
