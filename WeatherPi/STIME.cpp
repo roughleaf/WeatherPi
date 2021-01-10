@@ -35,12 +35,13 @@ void STIME::GetSystemTime(void)
 	BCDsecond = ToBCD(Second) & 0x0F;
 	BCD10second = ToBCD(Second) >> 4;
 
-	Date = std::to_string(Year) + "/" + std::to_string(Month) + "/" + std::to_string(Day);
-	Time = std::to_string(Hour) + ":" + std::to_string(Minute) + ":" + std::to_string(Second);
-	if (std::to_string(Second).length() == 1)
-	{
-		Time += "0";
-	}
+	// Bug: zero values is discarded. The use of the BCD variables siims to aleviate this. I need to adjust below code acordingly
+	Date = "20" + std::to_string(BCD10year) + std::to_string(BCDyear) + "/" + std::to_string(BCD10month) + std::to_string(BCDmonth) + "/" + std::to_string(BCD10day) + std::to_string(BCDday);
+	Time = std::to_string(BCD10hour) + std::to_string(BCDhour) + ":" + std::to_string(BCD10minute) + std::to_string(BCDminute) + ":" + std::to_string(BCD10second) + std::to_string(BCDsecond);
+	//if (std::to_string(Second).length() == 1)
+	//{
+	//	Time += "0";
+	//}
 
 	SystemDateTime = Date + " " + Time;
 }

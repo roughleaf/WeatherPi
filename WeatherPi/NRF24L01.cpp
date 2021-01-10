@@ -32,8 +32,7 @@ int NRF24L01::Initialize(int channel)
 		WriteRegisterBytes(RX_ADDR_P0_REG, channelP0, 5);
 		WriteRegisterBytes(TX_ADDR_REG, channelP0, 5);		
 
-		FlushRX();
-		FlushTX();
+		PTXmode();
 		PRXmode();
 		return handle;
 	}
@@ -153,18 +152,22 @@ char NRF24L01::ReadStatus(void)
 void NRF24L01::PTXmode(void)
 {
 	gpioWrite(NRF24_CE, 0);
-	FlushTX();
 	char conf = ReadRegister(CONFIG_REG);
 	conf &= 0xFE;
 	WriteRegister(CONFIG_REG, conf);
+	usleep(200);
+	FlushTX();
+	usleep(200);
 }
 
 void NRF24L01::PRXmode(void)
 {
-	FlushRX();
 	unsigned char conf = ReadRegister(CONFIG_REG);
 	conf |= 0x01;
 	WriteRegister(CONFIG_REG, conf);
+	usleep(200);
+	FlushRX();
+	usleep(200);
 	gpioWrite(NRF24_CE, 1);
 }
 

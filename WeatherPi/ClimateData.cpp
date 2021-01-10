@@ -44,3 +44,15 @@ void ClimateData::PopulateFromSensorNode(char* sensorNodeData)
 	NodeID = (int)sensorNodeData[1];
 	BME280Humididty = (int)sensorNodeData[18];
 }
+
+void ClimateData::PopulateFromLocal(char* localData)
+{
+	STIME systemTime;
+
+	systemTime.GetSystemTime();
+
+	Date = systemTime.Date;
+	Time = systemTime.Time;
+
+
+}

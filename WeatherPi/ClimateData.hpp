@@ -1,4 +1,5 @@
 #pragma once
+#include "STIME.hpp"
 #include <string>
 class ClimateData
 {
@@ -15,7 +16,7 @@ public:
 	std::string Time = "";
 
 	void PopulateFromSensorNode(char* sensorNodeData);
-	//void PopulateFromLocal(char* localData);
+	void PopulateFromLocal(char* localData);
 	//void BuildJsonString(char* jsonString);
 };
 
