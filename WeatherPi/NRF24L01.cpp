@@ -11,29 +11,28 @@ int NRF24L01::Initialize(int channel)
 		handle = spiOpen(channel, 100000, 0);
 
 		WriteRegister(CONFIG_REG, 0x0D);	// RX, TX & Max Retry interrupt enabled, PRX mode, Power Down, 2 byte CRC
-
 		WriteRegister(EN_RXADDR_REG, 0x01);	// Enable only datapipe 0
 		WriteRegister(EN_AA_REG, 0x01);	// Enable auto acknowledge for datapipe 0
-		Powerup();
-
-		WriteRegister(SETUP_AW_REG, 0x03);
-		WriteRegister(SETUP_RETR_REG,0xF3 );
 		WriteRegister(SETUP_AW_REG, 0x03);
 		WriteRegister(SETUP_RETR_REG, 0xF3);
 		WriteRegister(RF_CH_REG, 0x50);		// Set to 2480Mhz, outer edge of chanel 13 but still within legal limits
 		WriteRegister(RF_SETUP_REG, 0x0F);	// Set gain to minimum for testing
 		WriteRegister(STATUS_REG, 0x70);
 
-		Activate();							// Enable R_RX_PL_WID
+		Activate();							// Enable R_RX_PL_WID, DYNPD & FEATURE
 
-		WriteRegister(DYNPD_REG, 0x3F);		// Enable dynamic data width on all datapipes
+		WriteRegister(DYNPD_REG, 0x01);		// Enable dynamic data width on datapipes 0
 		WriteRegister(FEATURE_REG, 0x04);	// Enable dynamic data width feature
 
 		WriteRegisterBytes(RX_ADDR_P0_REG, channelP0, 5);
 		WriteRegisterBytes(TX_ADDR_REG, channelP0, 5);		
 
-		PTXmode();
-		PRXmode();
+		FlushTX();
+		FlushRX();
+
+		Powerup();
+		gpioWrite(NRF24_CE, 1);
+
 		return handle;
 	}
 	else
@@ -128,7 +127,6 @@ int NRF24L01::LoadPayload(const char* txBuff, int length)
 int NRF24L01::TransmitData(const char* txBuff, int length)
 {
 	PTXmode();					// Set PTX mode
-	FlushTX();
 
 	LoadPayload(txBuff, length);
 
@@ -155,9 +153,7 @@ void NRF24L01::PTXmode(void)
 	char conf = ReadRegister(CONFIG_REG);
 	conf &= 0xFE;
 	WriteRegister(CONFIG_REG, conf);
-	usleep(200);
 	FlushTX();
-	usleep(200);
 }
 
 void NRF24L01::PRXmode(void)
@@ -165,9 +161,7 @@ void NRF24L01::PRXmode(void)
 	unsigned char conf = ReadRegister(CONFIG_REG);
 	conf |= 0x01;
 	WriteRegister(CONFIG_REG, conf);
-	usleep(200);
 	FlushRX();
-	usleep(200);
 	gpioWrite(NRF24_CE, 1);
 }
 

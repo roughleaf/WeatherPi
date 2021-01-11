@@ -26,9 +26,6 @@
 #define PORT 8080 
 #define MAXLINE 1024 
 
-//gpioISRFunc_t PushedButton;
-
-
 // Need to make these global to be able to use them in the interrupt callback functions
 AS3935 lightningDetector;
 I2CLCD lcd;
@@ -143,6 +140,11 @@ int main(void)
 		std::cout << systemTime.SystemDateTime << " could not open AS3935" << std::endl;
 	}
 	
+	//sleep(2);	// Give time for all intialized devices to stabelise
+
+	systemTime.GetSystemTime();
+	std::cout << systemTime.SystemDateTime << " All devices started..." << std::endl;
+
 	//gpioISRFunc_t As3935CallBack = As3935Interrupt;				// Setup Interrupt Callback
 	gpioSetISRFunc(17, RISING_EDGE, 0, As3935Interrupt);			// Setup AS3935 Interrupt Callback
 
@@ -373,105 +375,81 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 }
 
 void NrfInterrupt(int gpio, int level, uint32_t tick)
-{	
-		systemTime.GetSystemTime();
-		std::cout << '\n' << systemTime.SystemDateTime << " Entered nRF24L01+ interrupt callback" << std::endl;
-		std::cout << "" << std::endl;
+{
+	systemTime.GetSystemTime();
+	std::cout << '\n' << systemTime.SystemDateTime << " Entered nRF24L01+ interrupt callback" << std::endl;
 
-		gpioWrite(19, !gpioRead(19));
+	gpioWrite(19, !gpioRead(19));	// LED toggle with each nrf24 interrupt
 
-		char status = 0;
+	char status = 0;
 
-		status = nrf24.ReadStatus();
+	status = nrf24.ReadStatus();
 
-		//=================================================================
-		// TODO
-		// Check all levels of FIFO buffer is empty.
-		// Bug: Currently if application is shut down while NRF24 module is powered then multiple levels of the buffer gets filled and recieved data is up to 3 transmissions behind
+	// TODO
+	// Decide how to return retreived data to main application
 
-		if (status & 0x40)		// RX Ready Interrupt
+	if (status & 0x40)		// RX Ready Interrupt
+	{
+		std::cout << "\t\t - RX Ready interrupt triggered\n" << std::endl;
+
+		int rxWidth = nrf24.GetRXWidth();		// How many bytes is in the received packet
+		char rxBuff[32] = { 0 };
+
+		nrf24.ReadPayload(rxBuff, rxWidth);
+
+		int Command = (int)rxBuff[0];
+		int NodeID = (int)rxBuff[1];
+
+		if (Command == 1)
 		{
-			std::cout << "\t\t - RX Ready interrupt triggered\n" << std::endl;
-
-			int rxWidth = nrf24.GetRXWidth();		// How many bytes is in the received packet
-			char rxBuff[32] = { 0 };
-
-			nrf24.ReadPayload(rxBuff, rxWidth);
-
-			int Command = (int)rxBuff[0];
-			int NodeID = (int)rxBuff[1];
-			if (Command == 1)
+			if ((NodeID >= 0) && (NodeID <= 8))	// Raspberry pi will always be NodeID[9]
 			{
-				if ((NodeID >= 0) && (NodeID <= 9))
-				{
-					nodeData[NodeID].PopulateFromSensorNode(rxBuff);
+				nodeData[NodeID].PopulateFromSensorNode(rxBuff);
 
-					std::cout << "\n\t\t - Node ID: " << nodeData[NodeID].NodeID << std::endl;
-					std::cout << "\t\t - Timestamp from node: " << nodeData[NodeID].Time << std::endl;
-					std::cout << "\t\t - Datestamp from node: " << nodeData[NodeID].Date << std::endl;
-					std::cout << "\t\t - RX Node BME Temperature: " << nodeData[NodeID].BME280Temperature << std::endl;
-					std::cout << "\t\t - RX Node BME Pressure: " << nodeData[NodeID].BME280Pressure << std::endl;
-					std::cout << "\t\t - RX Node BME Humidity: " << nodeData[NodeID].BME280Humididty << std::endl;
-					std::cout << "\t\t - RX Node DS18B20 Temperature: " << nodeData[NodeID].DS18B20Temperature << std::endl;
-					std::cout << "\t\t - RX Node Rain Count: " << nodeData[NodeID].RainCount << std::endl;
-				}
-				else
-				{
-					std::cout << "\n\t\t *** Received node ID: " << NodeID << " is out of range" << std::endl;
-					std::cout << "\t\t *** Confirm SW1 dipswitch configuration and restart SensorNode\n" << std::endl;
-
-				}
+				std::cout << "\n\t\t - Node ID: " << nodeData[NodeID].NodeID << std::endl;
+				std::cout << "\t\t - Timestamp from node: " << nodeData[NodeID].Time << std::endl;
+				std::cout << "\t\t - Datestamp from node: " << nodeData[NodeID].Date << std::endl;
+				std::cout << "\t\t - RX Node BME Temperature: " << nodeData[NodeID].BME280Temperature << std::endl;
+				std::cout << "\t\t - RX Node BME Pressure: " << nodeData[NodeID].BME280Pressure << std::endl;
+				std::cout << "\t\t - RX Node BME Humidity: " << nodeData[NodeID].BME280Humididty << std::endl;
+				std::cout << "\t\t - RX Node DS18B20 Temperature: " << nodeData[NodeID].DS18B20Temperature << std::endl;
+				std::cout << "\t\t - RX Node Rain Count: " << nodeData[NodeID].RainCount << std::endl;
 			}
 			else
 			{
-				nrfDateTimeTransmitFlag = true;
-				char datetimeTest[13] = { 0 };
-				icodec::BuildTimeDateByteString(datetimeTest, NodeID);
-				nrf24.TransmitData(datetimeTest, 13);					// Bug, Cannot call this function from here. Create timer interrupt to send the data from
-				systemTime.GetSystemTime();
-				std::cout << systemTime.SystemDateTime << " Date and time transmitted to SensorNode #" << NodeID << std::endl;	
-				//std::cout << systemTime.SystemDateTime << " *** Sending DateTime to node not implimented" << std::endl;
+				std::cout << "\n\t\t *** Received node ID: " << NodeID << " is out of range" << std::endl;
+				std::cout << "\t\t *** Confirm SW1 dipswitch configuration and restart SensorNode\n" << std::endl;
 			}
-
-			nrf24.FlushRX();
-			nrf24.WriteRegister(0x07, (status | 0x40));		// Clear RX interrupt flag
-			std::cout << "\n\t\t - RX Ready interrupt flag cleared" << std::endl;
-			nrf24.PRXmode();
-
-			//gpioWrite(NRF24_CE, 1);
-			// TODO
-			// Decide how to return retreived data to main application
 		}
-
-		if (status & 0x20)		// TX data sent interrupt flag
+		else
 		{
-			std::cout << "\t\t - Data was successfully transmitted to a SensorNode" << std::endl;
-			//nrf24.PRXmode();
-			std::cout << "\t\t - nrf24L01+ set to RX mode" << std::endl;
-			nrf24.WriteRegister(0x07, (status | 0x20));		// Clear TX data sent interrupt flag
-			std::cout << "\t\t - TX data sent interrupt flag cleared" << std::endl;
-			//nrf24.ResetRXAddr();							// Important to keep Datapipe 0 available
-			//std::cout << "RX and TX addresses set to default values" << std::endl;
-			nrf24.PRXmode();
-			//gpioWrite(NRF24_CE, 1);
+			nrfDateTimeTransmitFlag = true;
+			char datetimeTest[13] = { 0 };
+			icodec::BuildTimeDateByteString(datetimeTest, NodeID);
+			nrf24.TransmitData(datetimeTest, 13);					// Seems possible to transmit from this thread. Needs more testing.
+			systemTime.GetSystemTime();
+			std::cout << "\n\t\t - Node ID: " << nodeData[NodeID].NodeID << " requested Date and Time" << std::endl;
+			std::cout << '\n\t\t' << systemTime.SystemDateTime << " Date and time transmitted to SensorNode #" << NodeID << std::endl;
 		}
 
-		if (status & 0x10)		// Resend interrupt flag
-		{
-			//gpioWrite(NRF24_CE, 0);			// Patch to a bug, root cause was code leftover from legacy hardware in As3935Interrupt function. Bug was fixed at source.
-			char buftemp[5] = { 0 };
-			std::cout << "\t\t - *** Failed to transmit data to a SensorNode" << std::endl;
-			nrf24.WriteRegister(0x07, (status | 0x10));		// Clear resend interrupt flag
-			std::cout << "\t\t - Resent retry interrupt flag cleared" << std::endl;
-			nrf24.PRXmode();
-			//gpioWrite(NRF24_CE, 1);
-		}
+		nrf24.WriteRegister(0x07, (status | 0x40));		// Clear RX interrupt flag
+		std::cout << "\n\t\t - RX received interrupt flag cleared" << std::endl;
+	}
 
-		nrf24.WriteRegister(0x07, (status | 0x70));		// Clear all interupt flags
-		nrf24.ResetRXAddr();
-		//nrf24.FlushRX();
-		//nrf24.FlushTX();
-		nrf24.PRXmode();
-		// TODO
-		// Set default RX address
+	if (status & 0x20)		// TX data sent interrupt flag
+	{
+		std::cout << "\t\t - Data was successfully transmitted to a SensorNode" << std::endl;
+		nrf24.WriteRegister(0x07, (status | 0x20));		// Clear TX data sent interrupt flag
+		std::cout << "\t\t - TX data sent interrupt flag cleared" << std::endl;
+	}
+
+	if (status & 0x10)		// Resend interrupt flag
+	{
+		char buftemp[5] = { 0 };
+		std::cout << "\t\t - *** Failed to transmit data to a SensorNode" << std::endl;
+		nrf24.WriteRegister(0x07, (status | 0x10));		// Clear resend interrupt flag
+		std::cout << "\t\t - Resent retry interrupt flag cleared" << std::endl;
+	}
+	nrf24.WriteRegister(0x07, (status | 0x70));		// Ensure that all interrupts are clear
+	nrf24.PRXmode();	// This device will primarily be an PRX device
 }
