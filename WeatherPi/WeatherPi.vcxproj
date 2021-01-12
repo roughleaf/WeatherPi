@@ -84,6 +84,8 @@
     <ClCompile Include="src\Icodec.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\STIME.cpp" />
+    <ClCompile Include="src\WeatherpiISR.cpp" />
+    <ClCompile Include="src\WeatherPiSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Drivers\AS3935.hpp" />
@@ -97,6 +99,8 @@
     <ClInclude Include="src\ClimateData.hpp" />
     <ClInclude Include="src\Icodec.hpp" />
     <ClInclude Include="src\STIME.hpp" />
+    <ClInclude Include="src\WeatherpiISR.hpp" />
+    <ClInclude Include="src\WeatherPiSystem.hpp" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>

@@ -31,6 +31,12 @@
     <ClCompile Include="src\STIME.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\WeatherpiISR.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WeatherPiSystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Drivers\AS3935.hpp">
@@ -64,6 +70,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\STIME.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WeatherpiISR.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WeatherPiSystem.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
