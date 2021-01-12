@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Icodec.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="STIME.cpp" />
+    <ClCompile Include="AS3935.cpp" />
+    <ClCompile Include="BME280.cpp" />
+    <ClCompile Include="ClimateData.cpp" />
+    <ClCompile Include="DS18B20.cpp" />
+    <ClCompile Include="I2CLCD.cpp" />
+    <ClCompile Include="NRF24L01.cpp" />
+    <ClCompile Include="SSD1306.cpp" />
+    <ClCompile Include="Drivers\AS3935.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\BME280.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\DS18B20.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\I2CLCD.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\NRF24L01.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\SSD1306.cpp">
+      <Filter>Drivers</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GFXFonts.hpp" />
+    <ClInclude Include="Icodec.hpp" />
+    <ClInclude Include="Mono18pt7b.hpp" />
+    <ClInclude Include="STIME.hpp" />
+    <ClInclude Include="SSD1306.hpp" />
+    <ClInclude Include="AS3935.hpp" />
+    <ClInclude Include="BME280.hpp" />
+    <ClInclude Include="ClimateData.hpp" />
+    <ClInclude Include="DS18B20.hpp" />
+    <ClInclude Include="I2CLCD.hpp" />
+    <ClInclude Include="NRF24L01.hpp" />
+    <ClInclude Include="Drivers\AS3935.hpp">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\BME280.hpp">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\DS18B20.hpp">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\GFXFonts.hpp">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\I2CLCD.hpp">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Mono18pt7b.hpp">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\NRF24L01.hpp">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\SSD1306.hpp">
+      <Filter>Drivers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Drivers">
+      <UniqueIdentifier>{30082b23-38b9-44ff-86ad-afc49058ea21}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
