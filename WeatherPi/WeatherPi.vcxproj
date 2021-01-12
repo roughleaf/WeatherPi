@@ -31,6 +31,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <RemoteCopyIncludeDirectories>C:\Users\grobb\source\repos\roughleaf\WeatherPi\WeatherPi\Drivers;$(RemoteCopyIncludeDirectories)</RemoteCopyIncludeDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -48,6 +49,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ProjectPublicIncludePath>D:\Users\Anacronym\Documents\Projects\Visual Studio\Libraries\pigpio;$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
+    <SourcePath>C:\Users\grobb\source\repos\roughleaf\WeatherPi\WeatherPi\Drivers;$(SourcePath)</SourcePath>
+    <IncludePath>C:\Users\grobb\source\repos\roughleaf\WeatherPi\WeatherPi\Drivers;$(IncludePath)</IncludePath>
+    <AdditionalSourcesToCopyMapping>C:\Users\grobb\source\repos\roughleaf\WeatherPi\WeatherPi\Drivers;</AdditionalSourcesToCopyMapping>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
@@ -73,6 +77,12 @@
     <ClCompile Include="AS3935.cpp" />
     <ClCompile Include="BME280.cpp" />
     <ClCompile Include="ClimateData.cpp" />
+    <ClCompile Include="Drivers\AS3935.cpp" />
+    <ClCompile Include="Drivers\BME280.cpp" />
+    <ClCompile Include="Drivers\DS18B20.cpp" />
+    <ClCompile Include="Drivers\I2CLCD.cpp" />
+    <ClCompile Include="Drivers\NRF24L01.cpp" />
+    <ClCompile Include="Drivers\SSD1306.cpp" />
     <ClCompile Include="DS18B20.cpp" />
     <ClCompile Include="I2CLCD.cpp" />
     <ClCompile Include="Icodec.cpp" />
@@ -85,6 +95,14 @@
     <ClInclude Include="AS3935.hpp" />
     <ClInclude Include="BME280.hpp" />
     <ClInclude Include="ClimateData.hpp" />
+    <ClInclude Include="Drivers\AS3935.hpp" />
+    <ClInclude Include="Drivers\BME280.hpp" />
+    <ClInclude Include="Drivers\DS18B20.hpp" />
+    <ClInclude Include="Drivers\GFXFonts.hpp" />
+    <ClInclude Include="Drivers\I2CLCD.hpp" />
+    <ClInclude Include="Drivers\Mono18pt7b.hpp" />
+    <ClInclude Include="Drivers\NRF24L01.hpp" />
+    <ClInclude Include="Drivers\SSD1306.hpp" />
     <ClInclude Include="DS18B20.hpp" />
     <ClInclude Include="GFXFonts.hpp" />
     <ClInclude Include="I2CLCD.hpp" />
@@ -97,7 +115,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
       <CppLanguageStandard>c++17</CppLanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\grobb\source\repos\roughleaf\WeatherPi\WeatherPi\Drivers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\Users\grobb\source\repos\roughleaf\WeatherPi\WeatherPi\Drivers;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SharedLibrarySearchPath>C:\Users\grobb\source\repos\roughleaf\WeatherPi\WeatherPi\Drivers;%(SharedLibrarySearchPath)</SharedLibrarySearchPath>
+    </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
