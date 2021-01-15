@@ -5,7 +5,7 @@ unsigned char STIME::ToBCD(int n)
 	return ((n / 10) << 4) | (n % 10);
 }
 
-void STIME::GetSystemTime(void)
+std::string STIME::GetSystemTime(void)
 {
 	now = time(0);
 	SystemTime = localtime(&now);
@@ -44,4 +44,7 @@ void STIME::GetSystemTime(void)
 	//}
 
 	SystemDateTime = Date + " " + Time;
+
+	return SystemDateTime;
 }
+

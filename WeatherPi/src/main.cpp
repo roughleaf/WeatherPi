@@ -61,8 +61,8 @@ int main(void)
 			MSG_WAITALL, (struct sockaddr*)&cliaddr,
 			(socklen_t*)&len);
 
-		systemTime.GetSystemTime();
-		std::cout << systemTime.SystemDateTime << " Received UDP Datagram from " << inet_ntoa(cliaddr.sin_addr) << std::endl;
+		
+		std::cout << systemTime.GetSystemTime() << " Received UDP Datagram from " << inet_ntoa(cliaddr.sin_addr) << std::endl;
 
 		buffer[n] = '\0';
 
