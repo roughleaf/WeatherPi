@@ -85,6 +85,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\STIME.cpp" />
     <ClCompile Include="src\WeatherpiISR.cpp" />
+    <ClCompile Include="src\WeatherPiNetThreads.cpp" />
     <ClCompile Include="src\WeatherPiSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +101,7 @@
     <ClInclude Include="src\Icodec.hpp" />
     <ClInclude Include="src\STIME.hpp" />
     <ClInclude Include="src\WeatherpiISR.hpp" />
+    <ClInclude Include="src\WeatherPiNetThreads.hpp" />
     <ClInclude Include="src\WeatherPiSystem.hpp" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -110,6 +112,7 @@
     <Link>
       <AdditionalLibraryDirectories>C:\Users\grobb\source\repos\roughleaf\WeatherPi\WeatherPi\Drivers;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SharedLibrarySearchPath>C:\Users\grobb\source\repos\roughleaf\WeatherPi\WeatherPi\Drivers;%(SharedLibrarySearchPath)</SharedLibrarySearchPath>
+      <AdditionalOptions>-lpthread %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
