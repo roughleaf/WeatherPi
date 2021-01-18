@@ -47,9 +47,12 @@ int main(void)
 	pthread_join(udpThread, &status);								// Join the Thread. Now the main function will block and wait for the udpNet function to finish.	
 
 	oledDisplay.DisplayOff();
-	std::cout << "Releasing I2C Handles" << std::endl;
 	oledDisplay.Close();
+	lightningDetector.Close();
+	lcd.Close();
+	nrf24.Close();
 	sensorBME280.Close();
+
 	std::cout << "Releasing GPIO Library" << std::endl;
 	gpioTerminate();
 	return 0;

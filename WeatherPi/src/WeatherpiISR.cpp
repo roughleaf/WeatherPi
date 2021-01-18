@@ -23,8 +23,7 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 		count = std::to_string(++lightningDetector.LightningStrikeCount);
 		dist = lightningDetector.ReadRegister(0x07);
 
-		nodeData[9].LightningCount++;
-		nodeData[9].LightningDistance = dist;
+		nodeData[9].AddLightningStrike(dist);
 
 		std::cout << "\t\t - Lightning detected" << std::endl;
 		std::cout << "\t\t - Lightning Distance estimation: " << dist << "km" << std::endl;
@@ -58,8 +57,7 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 
 void NrfInterrupt(int gpio, int level, uint32_t tick)
 {
-	systemTime.GetSystemDateTime();
-	std::cout << '\n' << systemTime.SystemDateTime << " Entered nRF24L01+ interrupt callback" << std::endl;
+	std::cout << '\n' << systemTime.GetSystemDateTime() << " Entered nRF24L01+ interrupt callback" << std::endl;
 
 	gpioWrite(19, !gpioRead(19));	// LED toggle with each nrf24 interrupt
 
@@ -108,9 +106,8 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 			char datetimeTest[13] = { 0 };
 			icodec::BuildTimeDateByteString(datetimeTest, NodeID);
 			nrf24.TransmitData(datetimeTest, 13);					// Seems possible to transmit from this thread. Needs more testing.
-			systemTime.GetSystemDateTime();
 			std::cout << "\n\t\t - Node ID: " << NodeID << " requested Date and Time" << std::endl;
-			std::cout << '\n\t\t' << systemTime.SystemDateTime << " Date and time transmitted to SensorNode #" << NodeID << std::endl;
+			std::cout << "\t\t - Date and time transmitted to SensorNode #" << NodeID << std::endl;
 		}
 
 		nrf24.WriteRegister(0x07, (status | 0x40));		// Clear RX interrupt flag

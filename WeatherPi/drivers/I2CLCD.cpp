@@ -1,6 +1,5 @@
 #include "I2CLCD.hpp"
 #include <unistd.h>
-#include <iostream>
 #include <bitset>
 #include <string.h>
 
@@ -145,4 +144,9 @@ int I2CLCD::Home()
 	WriteCommand(LCD_HOME);
 	usleep(1300);
 	return 0;
+}
+
+void I2CLCD::Close(void)
+{
+	i2cClose(handle);
 }

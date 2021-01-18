@@ -64,5 +64,6 @@ public:
 	void Powerup(void);
 	void Activate(void);
 	int GetRXWidth(void);
+	void Close(void);
 };
 

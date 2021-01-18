@@ -38,5 +38,6 @@ public:
 	int On();
 	int Off();
 	int Home();
+	void Close(void);
 };
 

@@ -56,10 +56,26 @@ void ClimateData::PopulateFromLocal(float bmeTemp, float bmePressure, int bmeHum
 	DS18B20Temperature = ds18b20Temp;
 }
 
+void ClimateData::AddLightningStrike(int distance)
+{
+	if (LightningCount < 100)
+	{
+		LightningDistance[LightningCount] = distance;
+	}
+	LightningCount++;	// I want LightningCount to keep counting even after LightningDistance array is full.
+}
+
 std::string ClimateData::UdpReturnString(void)
 {
 	return std::to_string(BME280Temperature) + ',' 
 		+ std::to_string(BME280Humididty) + ',' 
 		+ std::to_string(BME280Pressure) + ',' 
 		+ std::to_string(DS18B20Temperature);
+}
+
+std::string ClimateData::BuildJsonString(void)
+{
+	std::string JsonReturn = "";
+
+	return JsonReturn;
 }

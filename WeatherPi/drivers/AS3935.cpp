@@ -46,3 +46,8 @@ int AS3935::SetRegister(unsigned char reg, unsigned char value)
 
 	return 0;
 }
+
+void AS3935::Close(void)
+{
+	spiClose(handle);
+}

@@ -13,5 +13,6 @@ public:
 	int Initialize(int channel);
 	unsigned char ReadRegister(char reg);
 	int SetRegister(unsigned char reg, unsigned char value);
+	void Close(void);
 };
 

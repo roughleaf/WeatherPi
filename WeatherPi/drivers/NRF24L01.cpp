@@ -1,7 +1,6 @@
 #include "NRF24L01.hpp"
 #include <unistd.h>
 #include <string.h>
-#include <iostream>
 
 int NRF24L01::Initialize(int channel)
 {
@@ -211,4 +210,9 @@ int NRF24L01::GetRXWidth(void)
 	char txCommand[2] = { R_RX_PL_WID , 0 };
 	spiXfer(handle, txCommand, rxWidth, 2);
 	return rxWidth[1];
+}
+
+void NRF24L01::Close(void)
+{
+	spiClose(handle);
 }
