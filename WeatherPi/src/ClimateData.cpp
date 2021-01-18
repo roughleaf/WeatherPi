@@ -45,14 +45,21 @@ void ClimateData::PopulateFromSensorNode(char* sensorNodeData)
 	BME280Humididty = (int)sensorNodeData[18];
 }
 
-void ClimateData::PopulateFromLocal(char* localData)
+void ClimateData::PopulateFromLocal(float bmeTemp, float bmePressure, int bmeHumidity, float ds18b20Temp)
 {
-	STIME systemTime;
+	Date = systemTime.GetSystemDate();
+	Time = systemTime.GetSystemTime();
 
-	systemTime.GetSystemTime();
+	BME280Temperature = bmeTemp;
+	BME280Pressure = bmePressure;
+	BME280Humididty = bmeHumidity;
+	DS18B20Temperature = ds18b20Temp;
+}
 
-	Date = systemTime.Date;
-	Time = systemTime.Time;
-
-
+std::string ClimateData::UdpReturnString(void)
+{
+	return std::to_string(BME280Temperature) + ',' 
+		+ std::to_string(BME280Humididty) + ',' 
+		+ std::to_string(BME280Pressure) + ',' 
+		+ std::to_string(DS18B20Temperature);
 }
