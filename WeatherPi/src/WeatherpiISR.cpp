@@ -3,9 +3,9 @@
 void As3935Interrupt(int gpio, int level, uint32_t tick)
 {
 	std::string count = "";
-	std::string dist = "";
+	int dist = -1;
 
-	systemTime.GetSystemTime();
+	systemTime.GetSystemDateTime();
 	std::cout << '\n' << systemTime.SystemDateTime << " AS3935 Interrupt Triggered\n" << std::endl;
 
 	usleep(5000);						// Wait 5 ms for AS3935 to finish operations
@@ -21,7 +21,10 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 	case 8:
 	{
 		count = std::to_string(++lightningDetector.LightningStrikeCount);
-		dist = std::to_string((int)lightningDetector.ReadRegister(0x07));
+		dist = lightningDetector.ReadRegister(0x07);
+
+		nodeData[9].LightningCount++;
+		nodeData[9].LightningDistance = dist;
 
 		std::cout << "\t\t - Lightning detected" << std::endl;
 		std::cout << "\t\t - Lightning Distance estimation: " << dist << "km" << std::endl;
@@ -30,7 +33,7 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 	case 4:
 	{
 		count = std::to_string(++lightningDetector.DisturberCount);
-		dist = std::to_string((int)lightningDetector.ReadRegister(0x07));
+		dist = lightningDetector.ReadRegister(0x07);
 
 		std::cout << "\t\t - Disturber detected" << std::endl;
 		std::cout << "\t\t - Distance Register: " << dist << std::endl;
@@ -55,7 +58,7 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 
 void NrfInterrupt(int gpio, int level, uint32_t tick)
 {
-	systemTime.GetSystemTime();
+	systemTime.GetSystemDateTime();
 	std::cout << '\n' << systemTime.SystemDateTime << " Entered nRF24L01+ interrupt callback" << std::endl;
 
 	gpioWrite(19, !gpioRead(19));	// LED toggle with each nrf24 interrupt
@@ -105,7 +108,7 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 			char datetimeTest[13] = { 0 };
 			icodec::BuildTimeDateByteString(datetimeTest, NodeID);
 			nrf24.TransmitData(datetimeTest, 13);					// Seems possible to transmit from this thread. Needs more testing.
-			systemTime.GetSystemTime();
+			systemTime.GetSystemDateTime();
 			std::cout << "\n\t\t - Node ID: " << NodeID << " requested Date and Time" << std::endl;
 			std::cout << '\n\t\t' << systemTime.SystemDateTime << " Date and time transmitted to SensorNode #" << NodeID << std::endl;
 		}

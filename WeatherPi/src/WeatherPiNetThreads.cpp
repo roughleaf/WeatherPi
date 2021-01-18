@@ -52,7 +52,7 @@ void* udpNet(void* port)
 			(socklen_t*)&len);
 
 
-		std::cout << systemTime.GetSystemTime() << " Received UDP Datagram from " << inet_ntoa(cliaddr.sin_addr) << std::endl;
+		std::cout << systemTime.GetSystemDateTime() << " Received UDP Datagram from " << inet_ntoa(cliaddr.sin_addr) << std::endl;
 
 		buffer[n] = '\0';
 
@@ -64,10 +64,14 @@ void* udpNet(void* port)
 		{
 		case '1':
 		{
-			UDPreturn = std::to_string(sensorBME280.GetTemperature()) + ','
+			nodeData[9].PopulateFromLocal(sensorBME280.GetTemperature(), sensorBME280.GetPressure(), sensorBME280.GetHumidity(), tempSensorDS18B20.GetTemperature());
+
+			UDPreturn = nodeData[9].UdpReturnString();
+
+			/*UDPreturn = std::to_string(sensorBME280.GetTemperature()) + ','
 				+ std::to_string(sensorBME280.GetHumidity()) + ','
 				+ std::to_string(sensorBME280.GetPressure()) + ','
-				+ std::to_string(tempSensorDS18B20.GetTemperature());
+				+ std::to_string(tempSensorDS18B20.GetTemperature());*/
 
 			// TODO
 			// + std::to_string(lightningDetector.Distance);

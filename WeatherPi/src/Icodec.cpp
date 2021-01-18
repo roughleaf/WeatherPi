@@ -4,7 +4,7 @@ namespace icodec
 	void BuildTimeDateByteString(char* datetime, int channel)
 	{
 		STIME stime;
-		stime.GetSystemTime();
+		stime.GetSystemDateTime();
 
 		datetime[0] = (char)channel;
 		datetime[1] = stime.BCD10year;
