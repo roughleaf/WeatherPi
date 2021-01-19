@@ -49,7 +49,7 @@ void ClimateData::PopulateFromLocal(float bmeTemp, float bmePressure, int bmeHum
 {
 	Date = systemTime.GetSystemDate();
 	Time = systemTime.GetSystemTime();
-
+	NodeID = 9;
 	BME280Temperature = bmeTemp;
 	BME280Pressure = bmePressure;
 	BME280Humididty = bmeHumidity;
@@ -61,6 +61,8 @@ void ClimateData::AddLightningStrike(int distance)
 	if (LightningCount < 100)
 	{
 		LightningDistance[LightningCount] = distance;
+		LightningDate[LightningCount] = systemTime.GetSystemDate();
+		LightningTime[LightningCount] = systemTime.GetSystemTime();
 	}
 	LightningCount++;	// I want LightningCount to keep counting even after LightningDistance array is full.
 }
@@ -75,7 +77,59 @@ std::string ClimateData::UdpReturnString(void)
 
 std::string ClimateData::BuildJsonString(void)
 {
-	std::string JsonReturn = "";
+	std::string JsonReturn = "{";
+	JsonReturn = JsonReturn + "\"NodeID\"" + ':' + std::to_string(NodeID) + ',';
+	JsonReturn = JsonReturn + "\"DateStamp\"" + ':' + '"'+ Date + '"' + ',';
+	JsonReturn = JsonReturn + "\"TimeStamp\"" + ':' + '"' + Time + '"' + ',';
+	JsonReturn = JsonReturn + "\"BME280Temperature\"" + ':' + std::to_string(BME280Temperature) + ',';
+	JsonReturn = JsonReturn + "\"BME280Pressure\"" + ':' + std::to_string(BME280Pressure) + ',';
+	JsonReturn = JsonReturn + "\"BME280Humididty\"" + ':' + std::to_string(BME280Humididty) + ',';
+	JsonReturn = JsonReturn + "\"DS18B20Temperature\"" + ':' + std::to_string(DS18B20Temperature) + ',';
+	JsonReturn = JsonReturn + "\"RainCount\"" + ':' + std::to_string(RainCount) + ',';
+	JsonReturn = JsonReturn + "\"LightningCount\"" + ':' + std::to_string(LightningCount) + ',';
 
+	JsonReturn = JsonReturn + "\"LightningDistance\"" + ":[";		// Open array
+	if (LightningCount > 0)
+	{
+		for (int i = 0; i < LightningCount; i++)
+		{
+			JsonReturn = JsonReturn + std::to_string(LightningDistance[i]);
+			if (i < LightningCount-1)									// The last element in the array must not have the coma
+			{
+				JsonReturn = JsonReturn + ',';
+			}
+		}
+	}
+	JsonReturn = JsonReturn + "],";									// Close Array
+	
+	JsonReturn = JsonReturn + "\"LightningDate\"" + ":[";		// Open array
+	if (LightningCount > 0)
+	{
+		for (int i = 0; i < LightningCount; i++)
+		{
+			JsonReturn = JsonReturn + '"' + LightningDate[i] + '"';
+			if (i < LightningCount - 1)									// The last element in the array must not have the coma
+			{
+				JsonReturn = JsonReturn + ',';
+			}
+		}
+	}
+	JsonReturn = JsonReturn + "],";
+
+	JsonReturn = JsonReturn + "\"LightningTime\"" + ":[";		// Open array
+	if (LightningCount > 0)
+	{
+		for (int i = 0; i < LightningCount; i++)
+		{
+			JsonReturn = JsonReturn + '"' + LightningTime[i]+ '"';
+			if (i < LightningCount - 1)									// The last element in the array must not have the coma
+			{
+				JsonReturn = JsonReturn + ',';
+			}
+		}
+	}
+	JsonReturn = JsonReturn + "]";
+	
+	JsonReturn += "}";
 	return JsonReturn;
 }
