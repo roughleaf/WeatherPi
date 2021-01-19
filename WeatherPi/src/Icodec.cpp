@@ -21,4 +21,18 @@ namespace icodec
 		datetime[11] = stime.BCD10second;
 		datetime[12] = stime.BCDsecond;
 	}
+
+	std::string BuildJsonArray(ClimateData* nodeData)
+	{
+		std::string JsonReturn = "[";
+
+		for (int i = 0; i < 9; i++)
+		{
+			JsonReturn = JsonReturn + nodeData[i].BuildJsonString() + ',';
+		}
+
+		JsonReturn = JsonReturn + nodeData[9].BuildJsonString() + ']';
+
+		return JsonReturn;
+	}
 }

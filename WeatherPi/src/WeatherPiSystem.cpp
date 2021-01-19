@@ -11,6 +11,11 @@ DS18B20 tempSensorDS18B20;
 
 void WeatherPiSystemInitialize(void)
 {
+	for (int i = 0; i < 10; i++)
+	{
+		nodeData[i].NodeID = i;	// Initialize values into NodeID for JSON identification on transmitted end.
+	}
+
 	system("clear");			// Clear console window
 
 	gpioInitialise();			// Initialize PIGPIO Library

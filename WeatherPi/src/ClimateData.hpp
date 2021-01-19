@@ -11,7 +11,9 @@ private:
 	int LightningCount = 0;
 	// Will initially be able to store 100 strikes in a 10 minute period.
 	// I'll allow Lightning count to run past 100 in lightning season to determine a reasonable array size.
-	int LightningDistance[100] = { 0 };		
+	int LightningDistance[100] = { 0 };
+	std::string LightningDate[100] = { "" };
+	std::string LightningTime[100] = { "" };
 	
 public:	
 	float BME280Temperature = 0;

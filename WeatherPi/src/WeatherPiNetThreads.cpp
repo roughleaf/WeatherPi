@@ -139,7 +139,27 @@ void* udpNet(void* port)
 
 		case '8':	// Section to test some stuff
 		{
-			int NodeID = 1;
+			// Add some lightnigh strikes to test JSON array
+			nodeData[9].AddLightningStrike(8);
+			nodeData[9].AddLightningStrike(6);
+			nodeData[9].AddLightningStrike(5);
+			nodeData[9].AddLightningStrike(1);
+			nodeData[9].AddLightningStrike(5);
+
+			// Populate nodeData object with data from sensors on the Raspberry pi.
+			// Then I test if the JSON from a single node is valid
+			// After that I test if all the nodes in a JSON array functions correctly.
+			// To test I copy the data from the console output and paste in in a online JSON validation tool and viewer.
+			nodeData[9].PopulateFromLocal(sensorBME280.GetTemperature(), sensorBME280.GetPressure(), sensorBME280.GetHumidity(), tempSensorDS18B20.GetTemperature());
+			std::cout << "\n\n=========================================================================================================" << std::endl;
+			std::cout << "Resulting JSON String for node[9]:\n" << nodeData[9].BuildJsonString() << std::endl;
+			std::cout << "=========================================================================================================" << std::endl;
+
+			std::cout << "\n\n=========================================================================================================" << std::endl;
+			std::cout << "Resulting JSON String for everything:\n" << icodec::BuildJsonArray(nodeData) << std::endl;
+			std::cout << "=========================================================================================================" << std::endl;
+
+			/*int NodeID = 1;
 			std::cout << "===========================================================================================" << std::endl;
 			std::cout << "\n\t\t - Node ID: " << nodeData[NodeID].NodeID << std::endl;
 			std::cout << "\t\t - Timestamp from node: " << nodeData[NodeID].Time << std::endl;
@@ -149,7 +169,7 @@ void* udpNet(void* port)
 			std::cout << "\t\t - RX Node BME Humidity: " << nodeData[NodeID].BME280Humididty << std::endl;
 			std::cout << "\t\t - RX Node DS18B20 Temperature: " << nodeData[NodeID].DS18B20Temperature << std::endl;
 			std::cout << "\t\t - RX Node Rain Count: " << nodeData[NodeID].RainCount << std::endl;
-			std::cout << "===========================================================================================" << std::endl;
+			std::cout << "===========================================================================================" << std::endl;*/
 		}
 		break;
 		}
