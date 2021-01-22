@@ -30,5 +30,6 @@ public:
 	void AddLightningStrike(int distance);
 	std::string UdpReturnString(void);
 	std::string BuildJsonString(void);
+	void clear(void);
 };
 

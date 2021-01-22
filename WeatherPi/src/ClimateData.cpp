@@ -133,3 +133,19 @@ std::string ClimateData::BuildJsonString(void)
 	JsonReturn += "}";
 	return JsonReturn;
 }
+
+void ClimateData::clear(void)
+{
+	// Not going to worry about clearing the arrays. If lightnigh count is 0 then whatever is in
+	// the arrays will not be added to the JSON. When LighningCount is incremented new correct values will be put into the array. 
+	LightningCount = 0;
+
+	BME280Temperature = 0;
+	BME280Pressure = 0;
+	DS18B20Temperature = 0;
+	BME280Humididty = 0;
+	RainCount = 0;
+	NodeID = 0;
+	Date = "";
+	Time = "";
+}
