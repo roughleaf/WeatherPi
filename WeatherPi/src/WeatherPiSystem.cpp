@@ -8,6 +8,7 @@ NRF24L01 nrf24;
 BME280 sensorBME280;
 SSD1306 oledDisplay;
 DS18B20 tempSensorDS18B20;
+LightningData lightningData;
 
 void WeatherPiSystemInitialize(void)
 {

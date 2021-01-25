@@ -5,15 +5,6 @@ class ClimateData
 {
 private:
 	STIME systemTime;
-
-	// LightningCount and LightningDistance must be private and only be updatable through class method.
-	// Reason being the LightningCount will be used to keep track of the LightningDisatnce element in the array
-	int LightningCount = 0;
-	// Will initially be able to store 100 strikes in a 10 minute period.
-	// I'll allow Lightning count to run past 100 in lightning season to determine a reasonable array size.
-	int LightningDistance[100] = { 0 };
-	std::string LightningDate[100] = { "" };
-	std::string LightningTime[100] = { "" };
 	
 public:	
 	float BME280Temperature = 0;
@@ -27,8 +18,8 @@ public:
 
 	void PopulateFromSensorNode(char* sensorNodeData);
 	void PopulateFromLocal(float bmeTemp, float bmePressure, int bmeHumidity, float ds18b20Temp);
-	void AddLightningStrike(int distance);
-	std::string UdpReturnString(void);
+	std::string UdpReturnString(void);		// Temporary function so that I can practically use the system while ind evelopment.
 	std::string BuildJsonString(void);
+	void clear(void);
 };
 

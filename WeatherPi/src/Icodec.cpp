@@ -22,16 +22,21 @@ namespace icodec
 		datetime[12] = stime.BCDsecond;
 	}
 
-	std::string BuildJsonArray(ClimateData* nodeData)
+	std::string BuildJsonArray(ClimateData* nodeData, LightningData lightningData)
+	// std::string BuildJsonArray(ClimateData* nodeData)
 	{
-		std::string JsonReturn = "[";
+		std::string JsonReturn = "{\"NodeData\":[";
 
 		for (int i = 0; i < 9; i++)
 		{
 			JsonReturn = JsonReturn + nodeData[i].BuildJsonString() + ',';
 		}
 
-		JsonReturn = JsonReturn + nodeData[9].BuildJsonString() + ']';
+		JsonReturn = JsonReturn + nodeData[9].BuildJsonString() + ']' + ',';
+
+		JsonReturn = JsonReturn + "\"LightningData\":" + lightningData.BuildJsonString();
+
+		JsonReturn = JsonReturn + '}';
 
 		return JsonReturn;
 	}

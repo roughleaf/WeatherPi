@@ -24,5 +24,6 @@ extern NRF24L01 nrf24;
 extern BME280 sensorBME280;
 extern SSD1306 oledDisplay;
 extern DS18B20 tempSensorDS18B20;
+extern LightningData lightningData;
 
 void WeatherPiSystemInitialize(void);

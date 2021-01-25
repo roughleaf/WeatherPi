@@ -68,11 +68,6 @@ void* udpNet(void* port)
 
 			UDPreturn = nodeData[9].UdpReturnString();
 
-			/*UDPreturn = std::to_string(sensorBME280.GetTemperature()) + ','
-				+ std::to_string(sensorBME280.GetHumidity()) + ','
-				+ std::to_string(sensorBME280.GetPressure()) + ','
-				+ std::to_string(tempSensorDS18B20.GetTemperature());*/
-
 			// TODO
 			// + std::to_string(lightningDetector.Distance);
 			// lightningDetector.LightningDetected = false;
@@ -140,11 +135,12 @@ void* udpNet(void* port)
 		case '8':	// Section to test some stuff
 		{
 			// Add some lightnigh strikes to test JSON array
-			nodeData[9].AddLightningStrike(8);
-			nodeData[9].AddLightningStrike(6);
-			nodeData[9].AddLightningStrike(5);
-			nodeData[9].AddLightningStrike(1);
-			nodeData[9].AddLightningStrike(5);
+			lightningData.AddLightningStrike(8);
+			lightningData.AddLightningStrike(6);
+			lightningData.AddLightningStrike(1);
+			lightningData.AddLightningStrike(5);
+			lightningData.AddLightningStrike(8);
+			
 
 			// Populate nodeData object with data from sensors on the Raspberry pi.
 			// Then I test if the JSON from a single node is valid
@@ -156,7 +152,7 @@ void* udpNet(void* port)
 			std::cout << "=========================================================================================================" << std::endl;
 
 			std::cout << "\n\n=========================================================================================================" << std::endl;
-			std::cout << "Resulting JSON String for everything:\n" << icodec::BuildJsonArray(nodeData) << std::endl;
+			std::cout << "Resulting JSON String for everything:\n" << icodec::BuildJsonArray(nodeData, lightningData) << std::endl;
 			std::cout << "=========================================================================================================" << std::endl;
 
 			/*int NodeID = 1;

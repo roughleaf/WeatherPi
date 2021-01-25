@@ -23,7 +23,7 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 		count = std::to_string(++lightningDetector.LightningStrikeCount);
 		dist = lightningDetector.ReadRegister(0x07);
 
-		nodeData[9].AddLightningStrike(dist);
+		lightningData.AddLightningStrike(dist);
 
 		std::cout << "\t\t - Lightning detected" << std::endl;
 		std::cout << "\t\t - Lightning Distance estimation: " << dist << "km" << std::endl;

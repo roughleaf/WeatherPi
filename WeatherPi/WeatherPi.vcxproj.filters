@@ -40,6 +40,9 @@
     <ClCompile Include="src\WeatherPiNetThreads.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\LightningData.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Drivers\AS3935.hpp">
@@ -82,6 +85,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\WeatherPiNetThreads.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LightningData.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

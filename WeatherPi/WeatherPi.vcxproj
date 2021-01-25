@@ -82,6 +82,7 @@
     <ClCompile Include="Drivers\SSD1306.cpp" />
     <ClCompile Include="src\ClimateData.cpp" />
     <ClCompile Include="src\Icodec.cpp" />
+    <ClCompile Include="src\LightningData.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\STIME.cpp" />
     <ClCompile Include="src\WeatherpiISR.cpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="Drivers\SSD1306.hpp" />
     <ClInclude Include="src\ClimateData.hpp" />
     <ClInclude Include="src\Icodec.hpp" />
+    <ClInclude Include="src\LightningData.hpp" />
     <ClInclude Include="src\STIME.hpp" />
     <ClInclude Include="src\WeatherpiISR.hpp" />
     <ClInclude Include="src\WeatherPiNetThreads.hpp" />
