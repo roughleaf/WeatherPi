@@ -1,6 +1,8 @@
 #pragma once
 #include <ctime>
 #include <string>
+#include <chrono>
+#include <thread>
 
 class STIME
 {
@@ -38,5 +40,7 @@ public:
 	std::string GetSystemDateTime(void);
 	std::string GetSystemDate(void);
 	std::string GetSystemTime(void);
+
+	std::chrono::system_clock::time_point GetNextTenMinute(void);
 };
 

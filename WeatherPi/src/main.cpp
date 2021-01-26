@@ -34,16 +34,23 @@ int main(void)
 {	
 	WeatherPiSystemInitialize();
 
+	// This thread will transmit measured data to the server over TCP even 10 minutes.
+	// This TCP thread will not accept any incomming connections.
+	// All the emasurements will be innitiated within this thread.
+	//pthread_t tcpTimerThread;										// Disable the thread while testing to preserve the SD card.
+	//int tcpPort = 8080;
+	//pthread_create(&tcpTimerThread, NULL, tcpDataTransmitTimer, (void*)tcpPort);
+
+	// This thread accept UDP datagrams and will be used for basic controls
+	// This thread will block the main function and in this way control when the application exits.
+	// The exit cammand can only be sent over UPD to this thread.
 	pthread_attr_t attr;
 	void* status;
-
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
 	pthread_t udpThread;
 	int udpPort = 8080;
 	pthread_create(&udpThread, &attr, udpNet, (void*)udpPort);		// Created a joinable thread, That is what &attr is for
-
 	pthread_join(udpThread, &status);								// Join the Thread. Now the main function will block and wait for the udpNet function to finish.	
 
 	oledDisplay.DisplayOff();

@@ -5,5 +5,8 @@
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
 #include <netinet/in.h>
+#include <thread>
+#include <ctime>
 
 void* udpNet(void* port);
+void* tcpDataTransmitTimer(void* port);

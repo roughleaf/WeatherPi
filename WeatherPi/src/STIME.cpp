@@ -1,4 +1,5 @@
 #include "STIME.hpp"
+#include <iostream>	// For testing and debugging purposes
 
 unsigned char STIME::ToBCD(int n)
 {
@@ -58,5 +59,27 @@ std::string STIME::GetSystemTime(void)
 {
 	GetSystemDateTime();
 	return Time;
+}
+
+std::chrono::system_clock::time_point STIME::GetNextTenMinute(void)
+{
+	now = time(0);
+
+	tm *NextTenMinute = localtime(&now);
+
+	int tenMinute = ToBCD(NextTenMinute->tm_min) >> 4;
+	tenMinute += 1;
+	tenMinute *= 10;
+										// This extra minute should provide some buffer for clock drift.
+	NextTenMinute->tm_min = tenMinute;
+
+	NextTenMinute->tm_sec = 10;
+
+	time_t tenMinuteTime = mktime(NextTenMinute);
+
+	std::chrono::system_clock::time_point tenMinuteReturn =
+		std::chrono::system_clock::from_time_t(tenMinuteTime);
+
+	return tenMinuteReturn;
 }
 
