@@ -70,7 +70,7 @@ std::chrono::system_clock::time_point STIME::GetNextTenMinute(void)
 	int tenMinute = ToBCD(NextTenMinute->tm_min) >> 4;
 	tenMinute += 1;
 	tenMinute *= 10;
-										// This extra minute should provide some buffer for clock drift.
+
 	NextTenMinute->tm_min = tenMinute;
 
 	NextTenMinute->tm_sec = 10;

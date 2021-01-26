@@ -36,7 +36,7 @@ int main(void)
 
 	// This thread will transmit measured data to the server over TCP even 10 minutes.
 	// This TCP thread will not accept any incomming connections.
-	// All the emasurements will be innitiated within this thread.
+	// All the measurements will be innitiated within this thread.
 	//pthread_t tcpTimerThread;										// Disable the thread while testing to preserve the SD card.
 	//int tcpPort = 8080;
 	//pthread_create(&tcpTimerThread, NULL, tcpDataTransmitTimer, (void*)tcpPort);
