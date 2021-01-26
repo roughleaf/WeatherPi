@@ -45,7 +45,7 @@ void* udpNet(void* port)
 
 	while (q != "0")
 	{
-		std::cout << "\nListening..." << std::endl << std::endl;
+		std::cout << "\nUDP Listening on port "<< Port << "..." << std::endl << std::endl;
 
 		n = recvfrom(sockfd, (char*)buffer, MAXLINE,
 			MSG_WAITALL, (struct sockaddr*)&cliaddr,
@@ -171,4 +171,31 @@ void* udpNet(void* port)
 		}
 	}
 	pthread_exit(NULL);
+}
+
+void* tcpDataTransmitTimer(void* port)
+{
+	int Port;
+	Port = (int)port;
+
+	std::cout << systemTime.GetSystemDateTime() << " tcpDataTransmitTimer Thread Created " << std::endl;
+
+	// This is where the data will be pushed to the server over TCP.
+	// For the time being it's only pushed to the console. Once the server is set up the JSON will be transmitted
+	while (true)	
+	{
+		std::this_thread::sleep_until(systemTime.GetNextTenMinute());
+
+		nodeData[9].PopulateFromLocal(sensorBME280.GetTemperature(), sensorBME280.GetPressure(), sensorBME280.GetHumidity(), tempSensorDS18B20.GetTemperature());
+		std::cout << systemTime.GetSystemDateTime() << " Local measurements has been made" << std::endl;
+
+		std::this_thread::sleep_for(std::chrono::seconds(20));	// Only transmit 20 seconds after all data has been received to account for possible clock drift
+
+		std::cout << "\n=========================================================================================================" << std::endl;
+		std::cout << "JSON That will be transmitted:\n\n" << icodec::BuildJsonArray(nodeData, lightningData) << std::endl;
+		std::cout << "=========================================================================================================" << std::endl;
+	}
+
+	pthread_exit(NULL);
+	//return nullptr;
 }
