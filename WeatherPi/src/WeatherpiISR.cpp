@@ -121,7 +121,6 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		std::cout << "\t\t - Data was successfully transmitted to a SensorNode" << std::endl;
 		nrf24.WriteRegister(0x07, (status | 0x20));		// Clear TX data sent interrupt flag
 		std::cout << "\t\t - TX data sent interrupt flag cleared" << std::endl;
-		nrf24.PRXmode();
 	}
 
 	if (status & 0x10)		// Resend interrupt flag
@@ -130,7 +129,6 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		std::cout << "\t\t - *** Failed to transmit data to a SensorNode" << std::endl;
 		nrf24.WriteRegister(0x07, (status | 0x10));		// Clear resend interrupt flag
 		std::cout << "\t\t - Resent retry interrupt flag cleared" << std::endl;
-		nrf24.PRXmode();
 	}
 	usleep(3000);	// Delay needed to fix bug where Date and time is not transmitted when console not active. 
 	nrf24.WriteRegister(0x07, (status | 0x70));		// Ensure that all interrupts are clear
