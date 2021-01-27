@@ -105,7 +105,9 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		{
 			char datetimeTest[13] = { 0 };
 			icodec::BuildTimeDateByteString(datetimeTest, NodeID);
-			nrf24.TransmitData(datetimeTest, 13);					// Seems possible to transmit from this thread. Needs more testing.
+			// Seems possible to transmit from this thread. Needs more testing.
+			// Fails when console output not active (nohup). Then the RTC values on remoteSensorNode stays reset values
+			nrf24.TransmitData(datetimeTest, 13);
 			std::cout << "\n\t\t - Node ID: " << NodeID << " requested Date and Time" << std::endl;
 			std::cout << "\t\t - Date and time transmitted to SensorNode #" << NodeID << std::endl;
 		}
@@ -119,6 +121,7 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		std::cout << "\t\t - Data was successfully transmitted to a SensorNode" << std::endl;
 		nrf24.WriteRegister(0x07, (status | 0x20));		// Clear TX data sent interrupt flag
 		std::cout << "\t\t - TX data sent interrupt flag cleared" << std::endl;
+		nrf24.PRXmode();
 	}
 
 	if (status & 0x10)		// Resend interrupt flag
@@ -127,7 +130,9 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		std::cout << "\t\t - *** Failed to transmit data to a SensorNode" << std::endl;
 		nrf24.WriteRegister(0x07, (status | 0x10));		// Clear resend interrupt flag
 		std::cout << "\t\t - Resent retry interrupt flag cleared" << std::endl;
+		nrf24.PRXmode();
 	}
+	usleep(3000);	// Delay needed to fix bug where Date and time is not transmitted when console not active. 
 	nrf24.WriteRegister(0x07, (status | 0x70));		// Ensure that all interrupts are clear
 	nrf24.PRXmode();	// This device will primarily be an PRX device
 }

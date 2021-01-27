@@ -105,7 +105,7 @@ double BME280::CompensatePressure(const unsigned long pressADC)
 		pressure = pressure_min;
 	}
 
-	return pressure;
+	return pressure / 100;
 
 }
 
