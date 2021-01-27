@@ -43,6 +43,9 @@
     <ClCompile Include="src\LightningData.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\TCP.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Drivers\AS3935.hpp">
@@ -88,6 +91,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\LightningData.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TCP.hpp">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

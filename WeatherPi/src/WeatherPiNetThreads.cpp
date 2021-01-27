@@ -166,6 +166,9 @@ void* udpNet(void* port)
 			std::cout << "\t\t - RX Node DS18B20 Temperature: " << nodeData[NodeID].DS18B20Temperature << std::endl;
 			std::cout << "\t\t - RX Node Rain Count: " << nodeData[NodeID].RainCount << std::endl;
 			std::cout << "===========================================================================================" << std::endl;*/
+
+			std::cout << tcp.SendOverTCP(13000, ServerIP, icodec::BuildJsonArray(nodeData, lightningData)) << std::endl;
+
 		}
 		break;
 		}
@@ -180,20 +183,23 @@ void* tcpDataTransmitTimer(void* port)
 
 	std::cout << systemTime.GetSystemDateTime() << " tcpDataTransmitTimer Thread Created " << std::endl;
 
-	// This is where the data will be pushed to the server over TCP.
-	// For the time being it's only pushed to the console. Once the server is set up the JSON will be transmitted
+	// This is where the data is pushed to the server over TCP in JSON format every 10 minutes.
 	while (true)	
 	{
 		std::this_thread::sleep_until(systemTime.GetNextTenMinute());
 
-		nodeData[9].PopulateFromLocal(sensorBME280.GetTemperature(), sensorBME280.GetPressure(), sensorBME280.GetHumidity(), tempSensorDS18B20.GetTemperature());
+		nodeData[9].PopulateFromLocal(
+			sensorBME280.GetTemperature(), 
+			sensorBME280.GetPressure(), 
+			sensorBME280.GetHumidity(), 
+			tempSensorDS18B20.GetTemperature());
+
 		std::cout << systemTime.GetSystemDateTime() << " Local measurements has been made" << std::endl;
 
 		std::this_thread::sleep_for(std::chrono::seconds(20));	// Only transmit 20 seconds after all data has been received to account for possible clock drift
 
-		std::cout << "\n=========================================================================================================" << std::endl;
-		std::cout << "JSON That will be transmitted:\n\n" << icodec::BuildJsonArray(nodeData, lightningData) << std::endl;
-		std::cout << "=========================================================================================================" << std::endl;
+		tcp.SendOverTCP(13000, ServerIP, icodec::BuildJsonArray(nodeData, lightningData));
+		std::cout << systemTime.GetSystemDateTime() << " JSON Data has been transmitted to the server" << std::endl;
 	}
 
 	pthread_exit(NULL);
