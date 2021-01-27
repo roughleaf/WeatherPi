@@ -85,6 +85,7 @@
     <ClCompile Include="src\LightningData.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\STIME.cpp" />
+    <ClCompile Include="src\TCP.cpp" />
     <ClCompile Include="src\WeatherpiISR.cpp" />
     <ClCompile Include="src\WeatherPiNetThreads.cpp" />
     <ClCompile Include="src\WeatherPiSystem.cpp" />
@@ -102,6 +103,7 @@
     <ClInclude Include="src\Icodec.hpp" />
     <ClInclude Include="src\LightningData.hpp" />
     <ClInclude Include="src\STIME.hpp" />
+    <ClInclude Include="src\TCP.hpp" />
     <ClInclude Include="src\WeatherpiISR.hpp" />
     <ClInclude Include="src\WeatherPiNetThreads.hpp" />
     <ClInclude Include="src\WeatherPiSystem.hpp" />

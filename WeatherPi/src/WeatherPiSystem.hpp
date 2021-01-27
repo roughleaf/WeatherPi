@@ -1,5 +1,6 @@
 #pragma once
 #include <pigpio.h>
+#include <fstream>
 #include "BME280.hpp"
 #include "SSD1306.hpp"
 #include "DS18B20.hpp"
@@ -11,6 +12,7 @@
 #include "Icodec.hpp"
 #include "ClimateData.hpp"
 #include "WeatherpiISR.hpp"
+#include "TCP.hpp"
 
 #define PORT 8080 
 #define MAXLINE 1024
@@ -25,5 +27,7 @@ extern BME280 sensorBME280;
 extern SSD1306 oledDisplay;
 extern DS18B20 tempSensorDS18B20;
 extern LightningData lightningData;
+extern TCP tcp;
+extern std::string ServerIP;
 
 void WeatherPiSystemInitialize(void);
