@@ -11,7 +11,7 @@ void ClimateData::PopulateFromSensorNode(char* sensorNodeData)
 
 	FLOATINTUNION_t fromByte;
 
-	char date[9] = { sensorNodeData[2]+48, sensorNodeData[3] + 48, '/', sensorNodeData[4] + 48, sensorNodeData[5] + 48, '/', sensorNodeData[6] + 48, sensorNodeData[7] + 48, '\0' };
+	char date[11] = {'2', '0', sensorNodeData[2]+48, sensorNodeData[3] + 48, '/', sensorNodeData[4] + 48, sensorNodeData[5] + 48, '/', sensorNodeData[6] + 48, sensorNodeData[7] + 48, '\0' };
 	Date = date;
 
 	char time[9] = { sensorNodeData[8] + 48, sensorNodeData[9] + 48, ':', sensorNodeData[10] + 48, sensorNodeData[11] + 48, ':', sensorNodeData[12] + 48, sensorNodeData[13] + 48, '\0' };
@@ -60,7 +60,7 @@ std::string ClimateData::UdpReturnString(void)
 {
 	return std::to_string(BME280Temperature) + ',' 
 		+ std::to_string(BME280Humididty) + ',' 
-		+ std::to_string(BME280Pressure) + ',' 
+		+ std::to_string(BME280Pressure*100) + ',' 
 		+ std::to_string(DS18B20Temperature);
 }
 
