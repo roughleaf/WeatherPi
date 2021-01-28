@@ -57,6 +57,9 @@ void As3935Interrupt(int gpio, int level, uint32_t tick)
 
 void NrfInterrupt(int gpio, int level, uint32_t tick)
 {
+	bool SendDateTime = false;
+	int NodeID = 0;
+
 	std::cout << '\n' << systemTime.GetSystemDateTime() << " Entered nRF24L01+ interrupt callback" << std::endl;
 
 	gpioWrite(19, !gpioRead(19));	// LED toggle with each nrf24 interrupt
@@ -78,7 +81,7 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		nrf24.ReadPayload(rxBuff, rxWidth);
 
 		int Command = (int)rxBuff[0];
-		int NodeID = (int)rxBuff[1];
+		NodeID = (int)rxBuff[1];
 
 		if (Command == 1)
 		{
@@ -103,13 +106,9 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		}
 		else
 		{
-			char datetimeTest[13] = { 0 };
-			icodec::BuildTimeDateByteString(datetimeTest, NodeID);
-			// Seems possible to transmit from this thread. Needs more testing.
-			// Fails when console output not active (nohup). Then the RTC values on remoteSensorNode stays reset values
-			nrf24.TransmitData(datetimeTest, 13);
-			std::cout << "\n\t\t - Node ID: " << NodeID << " requested Date and Time" << std::endl;
-			std::cout << "\t\t - Date and time transmitted to SensorNode #" << NodeID << std::endl;
+			SendDateTime = true;		// Calling the transmit function from here caused a race condition.
+										// To solve this I'm setting a flag and sending just before the thread closes
+										// This ensures that the thread will not spawn while another instance is active.
 		}
 
 		nrf24.WriteRegister(0x07, (status | 0x40));		// Clear RX interrupt flag
@@ -130,7 +129,16 @@ void NrfInterrupt(int gpio, int level, uint32_t tick)
 		nrf24.WriteRegister(0x07, (status | 0x10));		// Clear resend interrupt flag
 		std::cout << "\t\t - Resent retry interrupt flag cleared" << std::endl;
 	}
-	usleep(3000);	// Delay needed to fix bug where Date and time is not transmitted when console not active. 
 	nrf24.WriteRegister(0x07, (status | 0x70));		// Ensure that all interrupts are clear
 	nrf24.PRXmode();	// This device will primarily be an PRX device
+
+	if (SendDateTime)
+	{
+		char datetimeTest[13] = { 0 };
+		icodec::BuildTimeDateByteString(datetimeTest, NodeID);
+		nrf24.TransmitData(datetimeTest, 13);
+		std::cout << "\n\t\t - Node ID: " << NodeID << " requested Date and Time" << std::endl;
+		std::cout << "\t\t - Date and time transmitted to SensorNode #" << NodeID << std::endl;
+	}
+
 }
