@@ -3,6 +3,7 @@
 #include <string>
 #include "ClimateData.hpp"
 #include "LightningData.hpp"
+#include "WeatherPiSystem.hpp"
 namespace icodec
 {
 	void BuildTimeDateByteString(char* datetime, int channel);

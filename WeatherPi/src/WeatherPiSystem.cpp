@@ -11,9 +11,24 @@ DS18B20 tempSensorDS18B20;
 LightningData lightningData;
 TCP tcp;
 std::string ServerIP;
+std::string MacAddress;
 
 void WeatherPiSystemInitialize(void)
 {
+	system("clear");			// Clear console window
+
+	usleep(300000);
+
+	{
+		int fd = -1;
+		char buff[18] = { "" };
+		fd = open("/sys/class/net/wlan0/address", O_RDONLY);
+		read(fd, buff, sizeof(buff));
+		buff[17] = '\0';
+		MacAddress = buff;
+		std::cout << systemTime.GetSystemDateTime() << " Device MAC address is: " << MacAddress << std::endl;
+	}
+
 	std::ifstream ServerIpFile("ServerIP.txt");
 	getline(ServerIpFile, ServerIP);
 	ServerIpFile.close();
@@ -22,8 +37,6 @@ void WeatherPiSystemInitialize(void)
 	{
 		nodeData[i].NodeID = i;	// Initialize values into NodeID for JSON identification on transmitted end.
 	}
-
-	system("clear");			// Clear console window
 
 	gpioInitialise();			// Initialize PIGPIO Library
 

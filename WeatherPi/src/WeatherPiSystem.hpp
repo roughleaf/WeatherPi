@@ -29,5 +29,6 @@ extern DS18B20 tempSensorDS18B20;
 extern LightningData lightningData;
 extern TCP tcp;
 extern std::string ServerIP;
+extern std::string MacAddress;
 
 void WeatherPiSystemInitialize(void);

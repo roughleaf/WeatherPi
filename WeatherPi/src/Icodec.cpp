@@ -25,7 +25,11 @@ namespace icodec
 	std::string BuildJsonArray(ClimateData* nodeData, LightningData lightningData)
 	// std::string BuildJsonArray(ClimateData* nodeData)
 	{
-		std::string JsonReturn = "{\"NodeData\":[";
+		std::string JsonReturn = "{";
+		
+		JsonReturn = JsonReturn + "\"MacAddress\":" + '"' + MacAddress + '"' + ',';
+
+		JsonReturn = JsonReturn + "\"NodeData\":[";
 
 		for (int i = 0; i < 9; i++)
 		{
