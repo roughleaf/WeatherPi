@@ -203,6 +203,8 @@ void* tcpDataTransmitTimer(void* port)
 
 		// The next sections clears the onjects that were just sent as JSON objects.
 		// This is to avoid sending duplicate data if one of the nodes goes offline.
+		// TODO check that data was sent successfully. 
+		//      If the server is down save the data in a circular buffer and transmit everything when the server comes back online.
 		for (int i = 0; i < 9; i++)
 		{
 			nodeData[i].clear();
