@@ -2,7 +2,7 @@
 
 void LightningData::AddLightningStrike(int distance)
 {
-	if (LightningCount < 100)
+	if (LightningCount < 200)
 	{
 		StrikeDistance[LightningCount].LightningDistance = distance;
 		StrikeDistance[LightningCount].LightningDate = systemTime.GetSystemDate();

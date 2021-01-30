@@ -200,6 +200,15 @@ void* tcpDataTransmitTimer(void* port)
 
 		tcp.SendOverTCP(13000, ServerIP, icodec::BuildJsonArray(nodeData, lightningData));
 		std::cout << systemTime.GetSystemDateTime() << " JSON Data has been transmitted to the server" << std::endl;
+
+		// The next sections clears the onjects that were just sent as JSON objects.
+		// This is to avoid sending duplicate data if one of the nodes goes offline.
+		for (int i = 0; i < 9; i++)
+		{
+			nodeData[i].clear();
+		}
+		lightningData.clear();
+		std::cout << systemTime.GetSystemDateTime() << " ClimateData objects cleared" << std::endl;
 	}
 
 	pthread_exit(NULL);
