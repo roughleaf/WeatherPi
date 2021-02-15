@@ -41,12 +41,14 @@ void ClimateData::PopulateFromSensorNode(char* sensorNodeData)
 	fromByte.bytes[3] = sensorNodeData[30];
 	RainCount = fromByte.intNumber;
 
+	IsPresent = true;
 	NodeID = (int)sensorNodeData[1];
 	BME280Humididty = (int)sensorNodeData[18];
 }
 
 void ClimateData::PopulateFromLocal(float bmeTemp, float bmePressure, int bmeHumidity, float ds18b20Temp)
 {
+	IsPresent = true;
 	Date = systemTime.GetSystemDate();
 	Time = systemTime.GetSystemTime();
 	NodeID = 9;
@@ -64,9 +66,10 @@ std::string ClimateData::UdpReturnString(void)
 		+ std::to_string(DS18B20Temperature);
 }
 
-std::string ClimateData::BuildJsonString(void)
+std::string ClimateData::BuildJsonString(void)	// Shorthand method += does not work as expected when multiple strings are stringed together.
 {
 	std::string JsonReturn = "{";
+	JsonReturn = JsonReturn + "\"IsPresent\"" + ':' + "true" + ',';				// If this function gets called, it's true. The toString method returns a "1"
 	JsonReturn = JsonReturn + "\"NodeID\"" + ':' + std::to_string(NodeID) + ',';
 	JsonReturn = JsonReturn + "\"DateStamp\"" + ':' + '"'+ Date + '"' + ',';
 	JsonReturn = JsonReturn + "\"TimeStamp\"" + ':' + '"' + Time + '"' + ',';
@@ -82,6 +85,7 @@ std::string ClimateData::BuildJsonString(void)
 
 void ClimateData::clear(void)
 {
+	IsPresent = false;
 	BME280Temperature = 0;
 	BME280Pressure = 0;
 	DS18B20Temperature = 0;

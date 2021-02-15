@@ -27,7 +27,7 @@ namespace icodec
 	{
 		typedef union
 		{
-			short shortNumber;
+			unsigned short shortNumber;
 			uint8_t bytes[2];
 		} SHORTUNION_t;
 		
@@ -41,7 +41,10 @@ namespace icodec
 
 		for (int i = 0; i < 9; i++)
 		{
-			JsonReturn = JsonReturn + nodeData[i].BuildJsonString() + ',';
+			if (nodeData[i].IsPresent)		// Let's not send JSON objects with empty datafields.
+			{
+				JsonReturn = JsonReturn + nodeData[i].BuildJsonString() + ',';
+			}
 		}
 
 		JsonReturn = JsonReturn + nodeData[9].BuildJsonString() + ']' + ',';

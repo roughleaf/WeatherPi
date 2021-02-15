@@ -7,6 +7,7 @@ private:
 	STIME systemTime;
 	
 public:	
+	bool IsPresent = false;
 	float BME280Temperature = 0;
 	float BME280Pressure = 0;
 	float DS18B20Temperature = 0;
