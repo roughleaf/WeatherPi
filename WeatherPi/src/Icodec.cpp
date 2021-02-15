@@ -25,6 +25,14 @@ namespace icodec
 	std::string BuildJsonArray(ClimateData* nodeData, LightningData lightningData)
 	// std::string BuildJsonArray(ClimateData* nodeData)
 	{
+		typedef union
+		{
+			short shortNumber;
+			uint8_t bytes[2];
+		} SHORTUNION_t;
+		
+		SHORTUNION_t shortToByte;
+
 		std::string JsonReturn = "{";
 		
 		JsonReturn = JsonReturn + "\"MacAddress\":" + '"' + MacAddress + '"' + ',';
@@ -41,6 +49,13 @@ namespace icodec
 		JsonReturn = JsonReturn + "\"LightningData\":" + lightningData.BuildJsonString();
 
 		JsonReturn = JsonReturn + '}';
+
+		// Following code clock sets the string length as a header.
+		shortToByte.shortNumber = JsonReturn.length();
+		char LengthHeaderTempChar[2] = { shortToByte.bytes[0], shortToByte.bytes[1] };
+		std::string lengthHeader = LengthHeaderTempChar;
+
+		JsonReturn = lengthHeader + JsonReturn;
 
 		return JsonReturn;
 	}

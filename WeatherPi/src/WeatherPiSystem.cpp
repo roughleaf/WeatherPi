@@ -17,7 +17,7 @@ void WeatherPiSystemInitialize(void)
 {
 	system("clear");			// Clear console window
 
-	usleep(300000);
+	usleep(300000);				// Give the system command time to finish
 
 	{
 		int fd = -1;
