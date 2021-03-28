@@ -15,7 +15,7 @@ int NRF24L01::Initialize(int channel)
 		WriteRegister(SETUP_AW_REG, 0x03);
 		WriteRegister(SETUP_RETR_REG, 0xF3);
 		WriteRegister(RF_CH_REG, 0x50);		// Set to 2480Mhz, outer edge of chanel 13 but still within legal limits
-		WriteRegister(RF_SETUP_REG, 0x0F);	// Set gain to minimum for testing
+		WriteRegister(RF_SETUP_REG, 0x0F);	// Gain set to maximum @ 0dBm
 		WriteRegister(STATUS_REG, 0x70);
 
 		Activate();							// Enable R_RX_PL_WID, DYNPD & FEATURE
