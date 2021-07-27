@@ -1,5 +1,11 @@
 # WeatherPi
 
+### This project has been deprecated.
+### The Raspberry Pi will be replaced by a custom PCB incorporating an ESP32 WROOM 32 module.
+### A link to the new project will be added here when available.
+
+
+
 This is the Rasperry pi zero part of the Home Climate Monitoring System.
 
 Discription:
@@ -48,13 +54,7 @@ Set up visual studio for cross compile.
 The application must be run with sudo in order to gain direct access to hardware IO.
 
 TODO:
-a. Create the TCP threads.
-b. Create the methods to serialise the data into JSON
-c. Create C++ wrappers for the TCP and UDP funtions
-d. The SensorNodes will shortly impliment a circural buffer to save data when the weatherpi is offline, the Weatherpi needs to be abkle to receive all the data and process it appropriately.
-e. Syncronise an timer interrupt function to transmit the JSON at apropriate times.
-f. Spell check and format this readme file properly.
-
+Change the application to proper OO principals by removing the global variables scattered throughout the program and creating a wrapper class that runs the application. This will also make the cleanup code cleaner if it's placed in the deconstructor method.
 
 **I started to create a driver for a small OLED display presumably using the SSD1306 controller.
 I do not recommend using this driver for projects, as is the driver is unreliable.
